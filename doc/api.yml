@@ -1,0 +1,496 @@
+openapi: 3.0.3
+info:
+  title: Test
+  description: test
+  version: '1'
+
+paths:
+
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: If the user does not exist, it will be created, and an identifier is returned. If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Giggio
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                  example: "abcdef012345"
+                  
+  /settings/changeName:
+    put:
+      tags: ["User settings"]
+      summary: Lets the user change his Username
+      description: Requests new name and then changes the user's name
+      operationId: setMyUserName
+      requestBody:
+        description: New name
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newName:
+                  type: string
+                  example: Andrei2
+                  pattern: '^,*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses:
+        '204':
+          description: Name changed
+        '401':
+          description: Unauthorized
+
+  /settings/changePhoto:
+    put:
+      tags: ["User settings"]
+      summary: Change profile picture
+      description: Changes user profile picture
+      operationId: setMyPhoto
+      requestBody:
+        description: Upload photo
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                newPhoto:
+                  type: string
+                  format: binary
+      responses:
+        '204': 
+          description: Profile picture changed
+        '401':
+          description: Unauthorized
+
+  /chats:
+    get:
+      tags: ["Chats"]
+      summary: Lets the user view all of his conversations
+      description: Shows user all of their conversations
+      operationId: getMyConversations
+      responses:
+        '200':
+          description: Fetched all chats
+          content:
+           application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#components/schemas/chat"
+        '401':
+          description: Unauthorized
+
+  /chats/{chatId}:
+    get:
+      tags: ["Chats"]
+      summary: Lets the user view one specific conversation
+      description: Given the conversation ID it will return all the messages in that conversation
+      operationId: getConversation
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          description: View one conversation
+          schema:
+            type: string
+            example: "abcdef012345"
+      responses:
+        '200':
+          description: Fetched all messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/chat"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chat not found
+        
+                    
+    post:
+      tags: [Messages]
+      summary: Send a message
+      description: Sends the message to the selected chat
+      operationId: sendMessage
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          description: View one conversation
+          schema:
+            type: string
+            example: "abcdef012345"
+      requestBody:
+        description: Message
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/message"
+      responses:
+        '204':
+          description: "Message sent succesfully"
+        '401':
+          description: Unauthorized
+        
+  /chats/{chatId}/{messageId}:
+    post:
+      tags: [Messages]
+      summary: Forwards a message
+      description: Forwards the selected message to a new chat
+      operationId: forwardMessage
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "message5763"
+      requestBody:
+        description: Select chat to forward to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messageId:
+                  type: string
+                  example: "message4357"
+                chatId: 
+                  type: string
+                  example: "chat349875"
+      responses:
+        '204':
+          description: "Message forwarded"
+        '401':
+          description: "Unauthorized"
+        '404':
+          description: "Message or chat not found"
+            
+  /chats/{chatId}/{messageId}/reaction:
+    put:
+      tags: [Messages]
+      summary: Add a reaction to a message
+      description: Add the selected emoji as a reaction to a message
+      operationId: commentMessage
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "message5763"
+      requestBody:
+        description: Emoji to add
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reaction:
+                  type: string
+                  example: "emoji"
+      responses:
+        '204':
+          description: "Reaction added"
+        '401':
+          description: "Unauthorized"
+        '404':
+          description: "Message not found"
+
+  /chats/{chatId}/{messageId}/reaction/{reactionId}:
+    delete:
+      tags: [Messages]
+      summary: Deletes the reaction to the message
+      description: Deletes the added reaction to the selected message
+      operationId: uncommentMessage
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "message5763"
+        - name: reactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "reaction3895"
+      responses:
+        '204':
+          description: "Reaction deleted"
+        '401':
+          description: Unauthorized
+        '404':
+          description: "Message/Reaction not found"
+
+  /chats/{chatId}/{messageId}/delete:
+    delete:
+      tags: [Messages]
+      summary: Deletes a message
+      description: Deletes the selected message as long as it was sent by the user
+      operationId: deleteMessage
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "message5763"
+      responses:
+        '204':
+          description: Message deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Message not found
+
+  /chats/{chatId}/settings/add:
+    post:
+      tags: [Chat settings]
+      summary: Add user to group
+      description: Adds a new user to the group
+      operationId: addToGroup
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+      requestBody:
+        description: Select user to add to group
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "user2373"
+                chatId:
+                  type: string
+                  example: "chat3987"
+      responses:
+        '204':
+          description: User added
+        '401':
+          description: Unauthorized
+        '404':
+          description: User/Group not found
+
+  /chats/{chatId}/settings/leave:
+    delete:
+      tags: [Chat settings]
+      summary: Leaves the selected group
+      description: Leaves the selected group as long as the user is in it
+      operationId: leaveGroup
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+      responses:
+        '204': 
+          description: Group left
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+
+  /chats/{chatId}/settings/changeGroupName:
+    put:
+      tags: [Chat settings]
+      summary: Changes group name
+      description: Changes selected group name
+      operationId: setGroupName
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          description: View one conversation
+          schema:
+            type: string
+            example: "abcdef012345"
+      requestBody:
+        description: New name
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                newName:
+                  type: string
+                  example: "the small salami the return 2"
+                chatId:
+                  type: string
+                  example: "chat3975"
+      responses:
+        '204': 
+          description: Name changed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden can't change chat name
+        '404':
+          description: Gruop not found
+
+  /chats/{chatId}/settings/changePhoto:
+    put:
+      tags: [Chat settings]
+      summary: Change group photo
+      description: Changes the group photo
+      operationId: setGroupPhoto
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "chat3762"
+      requestBody:
+        description: New photo
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                newPhoto:
+                  type: string
+                  format: binary
+      responses:
+        '204': 
+          description: Photo changed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden can't change chat photo
+        '404':
+          description: Group not found
+
+components:
+  schemas:
+    
+    message:
+      type: object
+      properties:
+        text:
+          type: string
+          example: "Ciao"
+        photo:
+          type: string
+          format: binary
+        sender: 
+          type: string
+          example: "William"
+        reciver:
+          type: string
+          example: "Mario"
+        dateTime:
+          type: string
+          format: date-time
+          example: "2024-12-02T16:38:00"
+        reactions:
+          type: array
+          items:
+            type: object
+            properties:
+              utente:
+                type: string
+                example: "William"
+              reazione:
+                type: string
+                example: "emoji"
+
+    user:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "user456897"
+        userName:
+          type: string
+          example: "luiif"
+        userPhoto:
+          type: string
+          format: binary
+        
+    chat:
+      type: object
+      properties:
+        chatId:
+          type: string
+          example: "chat37543"
+        chatName:
+          type: string
+          example: "The salami 2 the return"
+        chatPhoto:
+          type: string
+          format: binary
+        chatType:
+          type: string
+          example: "Group"
+        chatPartecipants:
+          type: array
+          items:
+            $ref: "#/components/schemas/user"
+        chatMessages:
+          type: array
+          items:
+            $ref: "#/components/schemas/message"
+
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
