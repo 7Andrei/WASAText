@@ -40,9 +40,10 @@ import (
 type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
-	//InsertUser() error
-	//GetUserName(string) (string, error)
 	Ping() error
+
+	SetUsername(userId int, newName string) error
+	GetUser(userId int) (User, error)
 }
 
 type appdbimpl struct {
