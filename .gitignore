@@ -15,4 +15,5 @@ docker-compose.log
 .vscode/*
 !.vscode/extensions.json
 
-.devcontainer
+Dockerfile
+docker-compose.yml

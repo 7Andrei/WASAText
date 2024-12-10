@@ -17,3 +17,19 @@ func apiUser(user database.User) User {
 		Photo:    user.Photo,
 	}
 }
+
+type Chat struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Photo    []byte `json:"photo"`
+	ChatType string `json:"chattype"`
+}
+
+func apiChat(chat database.Chat) Chat {
+	return Chat{
+		Id:       chat.Id,
+		Name:     chat.Name,
+		Photo:    chat.Photo,
+		ChatType: chat.ChatType,
+	}
+}

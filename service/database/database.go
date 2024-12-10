@@ -44,6 +44,8 @@ type AppDatabase interface {
 
 	SetUsername(userId int, newName string) error
 	GetUser(userId int) (User, error)
+
+	GetChat(chatId int) (Chat, error)
 }
 
 type appdbimpl struct {

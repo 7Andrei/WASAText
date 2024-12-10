@@ -11,24 +11,24 @@ type User struct {
 }
 
 type Message struct {
-	id        int       `json:"id"`
-	content   string    `json:"content"`
-	photo     []byte    `json:"photo"`
-	sender    int       `json:"sender"`
-	receiver  int       `json:"receiver"`
-	forwarded uint64    `json:"forwarded"`
-	timeStamp time.Time `json:"timestamp"`
+	Id        int       `json:"id"`
+	Content   string    `json:"content"`
+	Photo     []byte    `json:"photo"`
+	Sender    int       `json:"sender"`
+	Receiver  int       `json:"receiver"`
+	Forwarded uint64    `json:"forwarded"`
+	TimeStamp time.Time `json:"timestamp"`
 }
 
 type Chat struct {
-	id       int    `json:"id"`
-	chatType string `json:"chatType"`
-	name     string `json:"chatName"`
-	photo    []byte `json:"chatPhoto"`
+	Id       int    `json:"id"`
+	ChatType string `json:"chatType"`
+	Name     string `json:"chatName"`
+	Photo    []byte `json:"chatPhoto"`
 }
 
 type Reaction struct {
-	userId    int    `json:"userId"`
-	messageId int    `json:"messageId"`
-	emoji     string `json:"emoji"`
+	UserId    int    `json:"userId"`
+	MessageId int    `json:"messageId"`
+	Emoji     string `json:"emoji"`
 }

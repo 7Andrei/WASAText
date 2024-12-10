@@ -9,8 +9,11 @@ func (rt *_router) Handler() http.Handler {
 	// Register routes
 	//rt.router.GET("/", rt.wrap(rt.insertUser))
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
+
 	rt.router.PUT("/changename", rt.setUsername)
 	rt.router.PUT("/getuser", rt.getUser)
+
+	rt.router.POST("/getchat", rt.getChat)
 	//rt.router.GET("/insert", rt.insertUser)
 	//rt.router.GET("/", rt.getUserName)
 
