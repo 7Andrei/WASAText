@@ -13,3 +13,21 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 	}
 	return chat, nil
 }
+
+/*
+func (db *appdbimpl) CreateChat(chat Chat) (int, error) {
+
+	_, err := db.c.Exec("INSERT INTO chats (name) VALUES (?)", userName)
+	if err != nil {
+		fmt.Println("Error creating 1 user. ", err)
+		return userId, err
+	}
+	err = db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
+	if err != nil {
+		fmt.Println("Error creating 2 user. ", err)
+		return userId, err
+	}
+	//fmt.Println("User ID:", userId)
+	return userId, nil
+}
+*/

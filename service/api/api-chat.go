@@ -15,7 +15,7 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	err := json.NewDecoder(r.Body).Decode(&chat.Id)
 	if err != nil {
-		fmt.Println("Error decoding chat Id Id(api). ", err)
+		fmt.Println("Error decoding chat Id(api). ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

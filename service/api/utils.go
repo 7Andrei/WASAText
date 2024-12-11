@@ -10,3 +10,9 @@ func IsPhoto(fileName string) bool {
 	}
 	return false
 }
+
+/*
+func Authorized(userId int) bool {
+
+}
+*/
