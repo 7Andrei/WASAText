@@ -15,7 +15,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/getuser", rt.getUser)
 	rt.router.PUT("/settings/changephoto", rt.setPhoto)
 
-	rt.router.POST("/getchat", rt.getChat)
+	rt.router.GET("/getchat", rt.getChat)
+	rt.router.POST("/createchat", rt.createChat)
 	//rt.router.GET("/insert", rt.insertUser)
 	//rt.router.GET("/", rt.getUserName)
 

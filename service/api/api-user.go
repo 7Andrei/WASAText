@@ -64,12 +64,12 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	tmpUser, available, erro := rt.db.GetUser(user.Id)
+	tmpUser, _, erro := rt.db.GetUser(user.Id)
 	//RISOLVERE
-	available = true
-	if available {
-		fmt.Println("ok")
-	}
+	// available = true
+	// if available {
+	// 	fmt.Println("ok")
+	// }
 	user = apiUser(tmpUser)
 
 	if erro != nil {

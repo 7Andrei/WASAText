@@ -1,6 +1,11 @@
 package api
 
-import "path/filepath"
+import (
+	"fmt"
+	"net/http"
+	"path/filepath"
+	"strconv"
+)
 
 func IsPhoto(fileName string) bool {
 	fileExt := filepath.Ext(fileName)
@@ -11,8 +16,22 @@ func IsPhoto(fileName string) bool {
 	return false
 }
 
-/*
-func Authorized(userId int) bool {
+func Authorized(r *http.Request, rt *_router) bool {
+
+	authentication := r.Header.Get("Authorization")
+	headerId, err := strconv.Atoi(authentication)
+	if err != nil {
+		fmt.Println("Error during conversion to int")
+		//w.WriteHeader(http.StatusBadRequest)
+		return false
+	}
+	_, available, err := rt.db.GetUser(headerId)
+
+	if err != nil || !available {
+		//http.Error(w, err.Error(), http.StatusUnauthorized)
+		fmt.Println("Unauthorized. ", err)
+		return false
+	}
+	return true
 
 }
-*/
