@@ -10,8 +10,9 @@ func (rt *_router) Handler() http.Handler {
 	//rt.router.GET("/", rt.wrap(rt.insertUser))
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
 
-	rt.router.PUT("/changename", rt.setUsername)
-	rt.router.PUT("/getuser", rt.getUser)
+	rt.router.POST("/login", rt.loginUser)
+	rt.router.POST("/changename", rt.setUsername)
+	rt.router.POST("/getuser", rt.getUser)
 
 	rt.router.POST("/getchat", rt.getChat)
 	//rt.router.GET("/insert", rt.insertUser)

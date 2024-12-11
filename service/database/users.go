@@ -7,14 +7,20 @@ import (
 
 func (db *appdbimpl) Login(userName string) (int, error) {
 	var userId int
-	err := db.c.QueryRow("SELECT name FROM users WHERE name=?", userName).Scan(&userId)
+	err := db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
 	if err == sql.ErrNoRows {
 		_, err := db.c.Exec("INSERT INTO users (name) VALUES (?)", userName)
 		if err != nil {
-			fmt.Println("Error creating user. ", err)
+			fmt.Println("Error creating 1 user. ", err)
+			return userId, err
+		}
+		err = db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
+		if err != nil {
+			fmt.Println("Error creating 2 user. ", err)
 			return userId, err
 		}
 	}
+	//fmt.Println("User ID:", userId)
 	return userId, nil
 }
 

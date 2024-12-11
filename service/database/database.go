@@ -42,6 +42,7 @@ type AppDatabase interface {
 	SetName(name string) error
 	Ping() error
 
+	Login(userName string) (int, error)
 	SetUsername(userId int, newName string) error
 	GetUser(userId int) (User, error)
 
@@ -64,7 +65,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 
-		userStmt := `CREATE TABLE IF NOT EXISTS users (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR NOT NULL , photo BLOB, identifier VARCHAR NOT NULL);`
+		userStmt := `CREATE TABLE IF NOT EXISTS users (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR NOT NULL , photo BLOB);`
 		_, err = db.Exec(userStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure users: %w", err)
