@@ -17,3 +17,5 @@ docker-compose.log
 
 Dockerfile
 docker-compose.yml
+
+/file/

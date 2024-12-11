@@ -24,14 +24,14 @@ func (db *appdbimpl) Login(userName string) (int, error) {
 	return userId, nil
 }
 
-func (db *appdbimpl) GetUser(userId int) (User, error) {
+func (db *appdbimpl) GetUser(userId int) (User, bool, error) {
 	var user User
 	err := db.c.QueryRow("SELECT id, name, photo FROM users WHERE id=?", userId).Scan(&user.Id, &user.Username, &user.Photo)
 	if err != nil {
 		fmt.Println("Error getting user data. ", err)
-		return user, err
+		return user, false, err
 	}
-	return user, nil
+	return user, true, nil
 }
 
 func (db *appdbimpl) SetUsername(userId int, newName string) error {
