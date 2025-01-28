@@ -10,6 +10,47 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	var user User
+
+	// err := json.NewDecoder(r.Body).Decode(&user)
+	// if err != nil {
+	// 	fmt.Println("Error decoding user Id(api). ", err)
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
+
+	var tempId string = ps.ByName("user_id")
+	user_id, err := strconv.Atoi(tempId)
+	if err != nil {
+		fmt.Println("Error converting user id(api). ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	user.Id = user_id
+
+	tmpUser, _, erro := rt.db.GetUser(user.Id)
+	user = apiUser(tmpUser)
+
+	if erro != nil {
+		fmt.Println("Error fetching user(api). ", erro)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, _ = w.Write([]byte("User found"))
+	fmt.Println("User found", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		fmt.Println("Error marshalling user(api). ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(userJSON)
+}
+
 func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	var user User
@@ -51,34 +92,6 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	_, _ = w.Write([]byte("Username updated"))
-}
-
-func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
-	var user User
-
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		fmt.Println("Error decoding user Id(api). ", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	tmpUser, _, erro := rt.db.GetUser(user.Id)
-	//RISOLVERE
-	// available = true
-	// if available {
-	// 	fmt.Println("ok")
-	// }
-	user = apiUser(tmpUser)
-
-	if erro != nil {
-		fmt.Println("Error fetching user. ", erro)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	_, _ = w.Write([]byte("User found"))
-	fmt.Println("User found", user)
 }
 
 func (rt *_router) setPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
