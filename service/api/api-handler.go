@@ -12,13 +12,14 @@ func (rt *_router) Handler() http.Handler {
 
 	rt.router.POST("/session", rt.loginUser)
 	rt.router.GET("/users/:user_id", rt.getUser)
-	rt.router.PUT("/users/:user_id/settings/changename", rt.setUsername)
-	rt.router.PUT("/users/:user_id/settings/changephoto", rt.setPhoto)
+	rt.router.PUT("/settings/changename", rt.setUsername)
+	rt.router.PUT("/settings/changephoto", rt.setPhoto)
 
 	rt.router.GET("/chats/:chat_id", rt.getChat)
+	rt.router.GET("/chats", rt.getAllChats)
 	rt.router.POST("/createchat", rt.createChat)
-	//rt.router.GET("/insert", rt.insertUser)
-	//rt.router.GET("/", rt.getUserName)
+
+	rt.router.POST("/chats/:chat_id", rt.sendMessage)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)

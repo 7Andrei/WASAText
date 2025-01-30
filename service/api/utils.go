@@ -20,8 +20,9 @@ func Authorized(r *http.Request, rt *_router) bool {
 
 	authentication := r.Header.Get("Authorization")
 	headerId, err := strconv.Atoi(authentication)
+	fmt.Println(authentication)
 	if err != nil {
-		fmt.Println("Error during conversion to int")
+		fmt.Println("Error during conversion to int (Authorized utils.go)\n", err)
 		//w.WriteHeader(http.StatusBadRequest)
 		return false
 	}

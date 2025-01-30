@@ -61,14 +61,14 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 	//var user User
 	var chat Chat
 
-	if !Authorized(r, rt) {
-		fmt.Println("Unauthorized")
-		w.WriteHeader(http.StatusUnauthorized)
-	}
+	// if !Authorized(r, rt) {
+	// 	fmt.Println("Unauthorized")
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// }
 
 	err := json.NewDecoder(r.Body).Decode(&chat)
 	if err != nil {
-		fmt.Println("Error decoding chat Id(api). ", err, "chat", chat)
+		fmt.Println("Error decoding chat Id(api). ", err, "\nChat:", chat)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -79,9 +79,10 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	fmt.Println("Dati chat", chat.Name, chat.ChatType)
+	fmt.Println("Dati chat:", chat.Name, chat.ChatType)
+	fmt.Println("partecipanti:", chat.Participants)
 
-	err = rt.db.CreateChat(chat.Name, chat.Photo, chat.ChatType)
+	chat.Id, err = rt.db.CreateChat(chat.Name, chat.Photo, chat.ChatType)
 	if err != nil {
 		fmt.Println("Error creating chat. ", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -90,4 +91,56 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 
 	_, _ = w.Write([]byte("chat created"))
 	fmt.Println("chat created", chat)
+
+	for _, participant := range chat.Participants {
+		err := rt.db.AddParticipant(chat.Id, participant.Id)
+		if err != nil {
+			fmt.Println("Error adding partecipant (AddParticipants api-chat)\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+}
+
+func (rt *_router) getAllChats(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	var chats []Chat
+
+	chatList, err := rt.db.GetAllChats()
+	if err != nil {
+		fmt.Println("Error fetching chat list(api). ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	for _, chat := range chatList {
+		chats = append(chats, apiChat(chat))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	chatsJSON, err := json.Marshal(chats)
+	if err != nil {
+		fmt.Println("Error marshalling chat list(api). ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(chatsJSON)
+}
+
+func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var message Message
+
+	err := json.NewDecoder(r.Body).Decode(&message)
+	if err != nil {
+		fmt.Println("Error decoding message(sendMessage api-chat.go)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver)
+	if err != nil {
+		fmt.Println("Error sending message(sendMessage api-chat.go)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }

@@ -13,7 +13,7 @@ func (rt *_router) loginUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var user User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
-	//fmt.Println(user)
+	// fmt.Println(user)
 	if err != nil {
 		fmt.Println("Error decoding user(api). ", err)
 		w.WriteHeader(http.StatusBadRequest)

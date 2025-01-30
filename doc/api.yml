@@ -23,7 +23,7 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                userName:
                   type: string
                   example: Giggio
                   pattern: 'ˆ.*?$'
@@ -422,6 +422,45 @@ paths:
         '404':
           description: Group not found
 
+  /createchat:
+    post:
+      tags: ["Chats"]
+      summary: Create a new chat
+      description: Create a new chat
+      operationId: createChat
+      requestBody:
+        description: Chat details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chatName:
+                  type: string
+                  example: "University chat"
+                chatType:
+                  type: string
+                  example: "group"
+                chatParticipants:
+                  type: array
+                  items:
+                    # userId:
+                    #   type: integer
+                    #   example: "1"
+                    $ref: "#/components/schemas/user"
+        required: true
+      responses:
+        '201':
+          description: Chat created
+          content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                chatId:
+                  type: string
+                  example: "chat37543"
+
 components:
   schemas:
     
@@ -434,12 +473,13 @@ components:
         photo:
           type: string
           format: binary
+          example: null
         sender: 
-          type: string
-          example: "William"
+          type: integer
+          example: 1
         reciver:
-          type: string
-          example: "Mario"
+          type: integer
+          example: 3
         dateTime:
           type: string
           format: date-time
@@ -460,14 +500,15 @@ components:
       type: object
       properties:
         userId:
-          type: string
-          example: "user456897"
+          type: integer
+          example: "1"
         userName:
           type: string
           example: "luiif"
         userPhoto:
           type: string
           format: binary
+          example: null
         
     chat:
       type: object
@@ -484,7 +525,7 @@ components:
         chatType:
           type: string
           example: "Group"
-        chatPartecipants:
+        chatParticipants:
           type: array
           items:
             $ref: "#/components/schemas/user"
@@ -497,4 +538,4 @@ components:
     bearerAuth: # arbitrary name for the security scheme
       type: apiKey
       in: header
-      name: authorization
+      name: Authorization

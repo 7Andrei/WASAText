@@ -48,7 +48,11 @@ type AppDatabase interface {
 	SetUserPhoto(userId int, newPhoto []byte) error
 
 	GetChat(chatId int) (Chat, error)
-	CreateChat(chatName string, chatPhoto []byte, chatType string) error
+	CreateChat(chatName string, chatPhoto []byte, chatType string) (int, error)
+	GetAllChats() ([]Chat, error)
+	AddParticipant(chatId int, participantId int) error
+
+	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int) (int, error)
 }
 
 type appdbimpl struct {

@@ -21,10 +21,11 @@ type Message struct {
 }
 
 type Chat struct {
-	Id       int    `json:"id"`
-	ChatType string `json:"chatType"`
-	Name     string `json:"chatName"`
-	Photo    []byte `json:"chatPhoto"`
+	Id           int    `json:"id"`
+	ChatType     string `json:"chatType"`
+	Name         string `json:"chatName"`
+	Photo        []byte `json:"chatPhoto"`
+	Participants []User `json:"chatParticipants"`
 }
 
 type Reaction struct {
