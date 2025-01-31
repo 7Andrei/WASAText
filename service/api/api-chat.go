@@ -21,6 +21,12 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 	// 	return
 	// }
 
+	if !Authorized(r, rt) {
+		fmt.Println("Unauthorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	var tempId string = ps.ByName("chat_id")
 	chat_Id, err := strconv.Atoi(tempId)
 	if err != nil {
@@ -64,6 +70,7 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 	// if !Authorized(r, rt) {
 	// 	fmt.Println("Unauthorized")
 	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	return
 	// }
 
 	err := json.NewDecoder(r.Body).Decode(&chat)
@@ -93,7 +100,7 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 	fmt.Println("chat created", chat)
 
 	for _, participant := range chat.Participants {
-		err := rt.db.AddParticipant(chat.Id, participant.Id)
+		err := rt.db.AddParticipant(chat.Id, participant)
 		if err != nil {
 			fmt.Println("Error adding partecipant (AddParticipants api-chat)\n", err)
 			w.WriteHeader(http.StatusBadRequest)

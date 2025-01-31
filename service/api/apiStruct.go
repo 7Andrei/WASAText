@@ -25,7 +25,7 @@ type Chat struct {
 	Name         string `json:"chatName"`
 	Photo        []byte `json:"chatPhoto"`
 	ChatType     string `json:"chatType"`
-	Participants []User `json:"chatParticipants"`
+	Participants []int  `json:"chatParticipants"`
 }
 
 func apiChat(chat database.Chat) Chat {
