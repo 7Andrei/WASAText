@@ -49,10 +49,10 @@ type AppDatabase interface {
 
 	GetChat(chatId int) (Chat, error)
 	CreateChat(chatName string, chatPhoto []byte, chatType string) (int, error)
-	GetAllChats() ([]Chat, error)
+	GetAllChats(userId int) ([]Chat, error)
 	AddParticipant(chatId int, participantId int) error
 
-	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int) (int, error)
+	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
 }
 
 type appdbimpl struct {
@@ -87,7 +87,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 						 sender INT NOT NULL,
 						 receiver INT NOT NULL,
 						 forwarded INT,
-						 sentTime TEXT DEFAULT CURRENT_TIMESTAMP,
+						 sentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						 FOREIGN KEY(sender) references users(id),
 						 FOREIGN KEY(receiver) references chats(id),
 						 FOREIGN KEY(forwarded) references chats(id));`

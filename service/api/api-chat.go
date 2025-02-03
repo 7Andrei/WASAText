@@ -100,7 +100,7 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 	fmt.Println("chat created", chat)
 
 	for _, participant := range chat.Participants {
-		err := rt.db.AddParticipant(chat.Id, participant)
+		err := rt.db.AddParticipant(chat.Id, participant.Id)
 		if err != nil {
 			fmt.Println("Error adding partecipant (AddParticipants api-chat)\n", err)
 			w.WriteHeader(http.StatusBadRequest)
@@ -113,7 +113,29 @@ func (rt *_router) getAllChats(w http.ResponseWriter, r *http.Request, ps httpro
 
 	var chats []Chat
 
-	chatList, err := rt.db.GetAllChats()
+	if !Authorized(r, rt) {
+		fmt.Println("Unauthorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	userIdHeader := r.Header.Get("Authorization")
+	if userIdHeader == "" {
+		fmt.Println("userId header not found")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("userId header:", userIdHeader)
+
+	userId, err := strconv.Atoi(userIdHeader)
+	if err != nil {
+		fmt.Println("Error converting userId header to int getAllChats api-chat.go", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	chatList, err := rt.db.GetAllChats(userId)
 	if err != nil {
 		fmt.Println("Error fetching chat list(api). ", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -132,22 +154,4 @@ func (rt *_router) getAllChats(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	_, _ = w.Write(chatsJSON)
-}
-
-func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var message Message
-
-	err := json.NewDecoder(r.Body).Decode(&message)
-	if err != nil {
-		fmt.Println("Error decoding message(sendMessage api-chat.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver)
-	if err != nil {
-		fmt.Println("Error sending message(sendMessage api-chat.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 }

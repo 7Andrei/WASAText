@@ -15,7 +15,8 @@ export default {
             try 
             {
                 let response = await this.$axios.post("/session", {userName: this.userName})
-                this.userId = response.data.identifier
+                this.userId = response.data.userId
+                sessionStorage.setItem("userId", this.userId)
             } 
             catch (error) 
             {
@@ -35,6 +36,7 @@ export default {
         <input type="text" v-model="userName">
         <button type="submit">Puppa chi clicca</button>
     </form>
+
     <h1 v-if = "userId">
         {{ userId }}
     </h1>

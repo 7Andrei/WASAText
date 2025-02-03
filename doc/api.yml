@@ -444,10 +444,10 @@ paths:
                 chatParticipants:
                   type: array
                   items:
-                      description: userId
-                      type: integer
-                      example: "1"
-                    # $ref: "#/components/schemas/user"
+                      # description: user
+                      # type: integer
+                      # example: "1"
+                    $ref: "#/components/schemas/user"
         required: true
       responses:
         '201':
@@ -477,7 +477,7 @@ components:
         sender: 
           type: integer
           example: 1
-        reciver:
+        receiver:
           type: integer
           example: 3
         dateTime:

@@ -16,6 +16,42 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 		fmt.Println("Error getting chat data(DB). ", err)
 		return chat, err
 	}
+
+	rows, err := db.c.Query("SELECT u.Id, u.Name, u.Photo FROM user_chats uc JOIN users u ON uc.userId = u.Id WHERE chatId=?", chatId)
+	if err != nil {
+		fmt.Println("Error fetching chat participants(GetChat - chats.go). ", err)
+		return chat, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.Username, &user.Photo)
+		if err != nil {
+			fmt.Println("Error scanning chat participants(GetChat - chats.go). ", err)
+			return chat, err
+		}
+		chat.Participants = append(chat.Participants, user)
+	}
+
+	rows, err = db.c.Query("SELECT id, content, sender, receiver, COALESCE(forwarded, 0) AS forwarded, sentTime FROM messages WHERE receiver=?", chatId)
+	if err != nil {
+		fmt.Println("Error fetching chat messages(GetChat - chats.go). ", err)
+		return chat, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var message Message
+		err := rows.Scan(&message.Id, &message.Content, &message.Sender, &message.Receiver, &message.Forwarded, &message.TimeStamp)
+		if err != nil {
+			fmt.Println("Error scanning chat messages(GetChat - chats.go). ", err)
+			return chat, err
+		}
+		chat.Messages = append(chat.Messages, message)
+	}
+
+	fmt.Println("Chat found:", chat.Id, chat.Name, chat.Photo, chat.ChatType, chat.Participants)
 	return chat, nil
 }
 
@@ -33,9 +69,9 @@ func (db *appdbimpl) CreateChat(chatName string, chatPhoto []byte, chatType stri
 	return chatId, nil
 }
 
-func (db *appdbimpl) GetAllChats() ([]Chat, error) {
+func (db *appdbimpl) GetAllChats(userId int) ([]Chat, error) {
 	var chats []Chat
-	rows, err := db.c.Query("SELECT id, name, photo, type FROM chats")
+	rows, err := db.c.Query("SELECT id FROM chats c JOIN user_chats uc on c.id = uc.chatId WHERE uc.userId=?", userId)
 	if err != nil {
 		fmt.Println("Error fetching all chats(DB). ", err)
 		return chats, err
@@ -43,10 +79,16 @@ func (db *appdbimpl) GetAllChats() ([]Chat, error) {
 	defer rows.Close()
 
 	for rows.Next() {
+		var id int
 		var chat Chat
-		err := rows.Scan(&chat.Id, &chat.Name, &chat.Photo, &chat.ChatType)
+		err := rows.Scan(&id)
 		if err != nil {
 			fmt.Println("Error scanning chat data(DB). ", err)
+			return chats, err
+		}
+		chat, err = db.GetChat(id)
+		if err != nil {
+			fmt.Println("Error getting chat data(DB). ", err)
 			return chats, err
 		}
 		chats = append(chats, chat)
@@ -61,16 +103,4 @@ func (db *appdbimpl) AddParticipant(chatId int, participantId int) error {
 		return err
 	}
 	return nil
-}
-
-func (db *appdbimpl) SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int) (int, error) {
-	var messageId int
-	err := db.c.QueryRow("INSERT INTO messages (content, photo, sender, receiver) VALUES (?, ?, ?, ?) RETURNING id", messageContent, messagePhoto, messageSender, messageReceiver).Scan(&messageId)
-	if err != nil {
-		fmt.Println("Error sending message(SendMessage chats.go)\n", err)
-		return messageId, err
-	}
-	fmt.Println("Message sent:", messageContent, messagePhoto, messageSender, messageReceiver)
-
-	return messageId, nil
 }

@@ -19,3 +19,5 @@ Dockerfile
 docker-compose.yml
 
 /file/
+webui/vite.config.js
+.devcontainer/devcontainer.json
