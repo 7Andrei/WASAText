@@ -5,23 +5,23 @@ export default {
 			errormsg: null,
 			loading: false,
 			some_data: null,
+			userId: null
 		}
 	},
 	methods: {
-		async refresh() {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
+		login() {
+			this.userId = sessionStorage.getItem("userId");
 		},
+		goToProfile() {
+            this.$router.push(`/settings`);
+        },
+		goToLogin() {
+            this.$router.push('/login');
+        },
+
 	},
 	mounted() {
-		// this.refresh()
+		this.login();
 	}
 }
 </script>
@@ -33,18 +33,13 @@ export default {
 			<h1 class="h2">Home page</h1>
 			<div class="btn-toolbar mb-2 mb-md-0">
 				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
+                    <button v-if="userId" type="button" class="btn btn-sm btn-outline-primary" @click="goToProfile">
+                        Profile
+                    </button>
+                    <button v-else type="button" class="btn btn-sm btn-outline-primary" @click="goToLogin">
+                        Login
+                    </button>
+                </div>
 			</div>
 		</div>
 

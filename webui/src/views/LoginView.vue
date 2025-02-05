@@ -17,6 +17,7 @@ export default {
                 let response = await this.$axios.post("/session", {userName: this.userName})
                 this.userId = response.data.userId
                 sessionStorage.setItem("userId", this.userId)
+                this.$emit("login")
             } 
             catch (error) 
             {

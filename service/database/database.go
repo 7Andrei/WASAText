@@ -46,11 +46,14 @@ type AppDatabase interface {
 	SetUsername(userId int, newName string) error
 	GetUser(userId int) (User, bool, error)
 	SetUserPhoto(userId int, newPhoto []byte) error
+	GetAllUsers() ([]User, error)
 
 	GetChat(chatId int) (Chat, error)
 	CreateChat(chatName string, chatPhoto []byte, chatType string) (int, error)
 	GetAllChats(userId int) ([]Chat, error)
 	AddParticipant(chatId int, participantId int) error
+	SetChatName(chatId int, newName string) error
+	SetChatPhoto(chatId int, newPhoto []byte) error
 
 	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
 }

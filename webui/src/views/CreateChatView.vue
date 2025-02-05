@@ -7,6 +7,7 @@ export default {
             chatType: "",
             chatPhoto: null,
             chatParticipants: {},
+            users: {}
         }
     },
     methods: 
@@ -14,72 +15,41 @@ export default {
         async createChat(event)
         {
             event.preventDefault()
+            let chat = new FormData()
+            chat.append('chatName', this.chatName)
+            chat.append('chatType', this.chatType)
+            chat.append('chatPhoto', this.chatPhoto)
+            chat.append('chatParticipants', JSON.stringify(this.chatParticipants))
             try 
             {
-                let response = await this.$axios.post('/createchat', {
-                    chatName: this.chatName,
-                    chatType: this.chatType,
-                    chatPhoto: this.chatPhoto,
-                    chatParticipants: this.chatParticipants},
-                    {headers:{Authorization: this.userId}})
+                let response = await this.$axios.post('/createchat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 // console.log(response.data)
-                this.$router.push("/chats")
+                // this.$router.push("/chats")
             } 
             catch (error) 
             {
                 console.log("puppa", error)
             }
         },
-        async sendMessage(event)
+        handleFileUpload(event)
         {
-            event.preventDefault()
-            // console.log(this.message)
-            // console.log(this.userId)
-            // console.log(this.chatId)
-            try 
-            {
-                let response = await this.$axios.post(`/chats/${this.chatId}`, {
-                    text: this.message,
-                    photo: null,
-                    sender: parseInt(this.userId),
-                    receiver: parseInt(this.chatId)},
-                    {headers:{Authorization: this.userId}})
-                // console.log(response.data)
-                this.refreshMessages()
-                this.message=""
-            } 
-            catch (error) 
-            {
-                console.log("puppa", error)
-            }
-        },
-        getUser(userId)
-        {
-            const user = this.chat.chatParticipants.find(participant => participant.userId === userId);
-            console.log(user.userName)
-            return user.userName
-        },
-        isSender(senderId)
-        {
-            // console.log("senderId, userId", senderId, this.userId)
-            // console.log(senderId == this.userId)
-            return senderId == this.userId
+            this.chatPhoto = event.target.files[0]
         }
     },
     async mounted()
     {
         this.userId = sessionStorage.getItem("userId")
-        // try 
-        // {
-        //     let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
-        //     this.chat=response.data
+        try 
+        {
+            let response = await this.$axios.get(`/users`, {headers:{Authorization: this.userId}})
+            this.users=response.data
 
 
-        // } 
-        // catch (error) 
-        // {
-        //     console.log("puppa", error)
-        // }
+        } 
+        catch (error) 
+        {
+            console.log("puppa", error)
+        }
     }
 }
 </script>
@@ -90,27 +60,38 @@ export default {
             <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
         </div>
         <div v-else>
-            <div class="row border rounded mb-4">
+            <div class="row mb-4">
                 <h3>Create a New Chat</h3>
             </div>
             <form @submit.prevent="createChat">
-                <div class="mb-3">
-                    <label for="chatName" class="form-label">Chat Name</label>
-                    <input type="text" class="form-control" id="chatName" v-model="chatName" required>
+                <div class="row">
+                    <div class="mb-3 col-5">
+                        <label for="chatName" class="form-label">Chat Name</label>
+                        <input type="text" class="form-control" id="chatName" v-model="chatName" required>
+                    </div>
+                    <div class="mb-3 col-5">
+                        <label for="chatPhoto" class="form-label">Chat Photo</label>
+                        <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
+                    </div>
+                    <div class="mb-3 col-2">
+                        <label for="chatType" class="form-label">Chat Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="group" value="group" required v-model="chatType">
+                            <label class="form-check-label" for="group">Group</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="private" value="private" required v-model="chatType">
+                            <label class="form-check-label" for="private">Private</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="chatPhoto" class="form-label">Chat Photo</label>
-                    <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
-                </div>
-                <div class="mb-3">
-                    <label for="chatType" class="form-label">Chat Type</label>
-                    <input type="text" class="form-control" id="chatType" v-model="chatType" required>
-                </div>
-                <div class="mb-3">
-                    <label for="participants" class="form-label">Select Participants</label>
-                    <select multiple class="form-control" id="participants" v-model="participants">
-                        <option v-for="user in allUsers" :key="user.id" :value="user.id">{{ user.name }}</option>
-                    </select>
+                <div class="row">
+                    <div class="mb-3 col-10">
+                        <label for="chatParticipants" class="form-label">Select Participants</label>
+                        <select multiple class="form-control" id="chatParticipants" v-model="chatParticipants">
+                            <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Create Chat</button>
             </form>

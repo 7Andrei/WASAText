@@ -4,6 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import AllChatsView from '../views/AllChatsView.vue'
 import ChatView from '../views/ChatView.vue'
 import CreateChatView from '../views/CreateChatView.vue'
+import UserSettingsView from '../views/UserSettingsView.vue'
+import ChatSettingsView from '../views/ChatSettingsView.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -16,7 +18,9 @@ const router = createRouter({
 		{path: '/login', component: LoginView},
 		{path: '/chats', component: AllChatsView},
 		{path: '/chats/:chatId', component: ChatView},
-		{path: '/createchat', component: CreateChatView}
+		{path: '/createchat', component: CreateChatView},
+		{path: '/settings', component: UserSettingsView},
+		{path: '/chats/:chatId/settings', component: ChatSettingsView}
 	]
 })
 

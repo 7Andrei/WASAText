@@ -51,7 +51,7 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 		chat.Messages = append(chat.Messages, message)
 	}
 
-	fmt.Println("Chat found:", chat.Id, chat.Name, chat.Photo, chat.ChatType, chat.Participants)
+	// fmt.Println("Chat found:", chat.Id, chat.Name, chat.ChatType, chat.Participants)
 	return chat, nil
 }
 
@@ -100,6 +100,24 @@ func (db *appdbimpl) AddParticipant(chatId int, participantId int) error {
 	_, err := db.c.Exec("INSERT INTO user_chats (chatId, userId) VALUES (?, ?)", chatId, participantId)
 	if err != nil {
 		fmt.Println("Error adding partecipant to chat (AddPartecipant chats.go)\n", err)
+		return err
+	}
+	return nil
+}
+
+func (db *appdbimpl) SetChatName(chatId int, chatName string) error {
+	_, err := db.c.Exec("UPDATE chats SET name=? WHERE id=?", chatName, chatId)
+	if err != nil {
+		fmt.Println("Error updating chat name. SetChatName chats.go", err)
+		return err
+	}
+	return nil
+}
+
+func (db *appdbimpl) SetChatPhoto(chatId int, newPhoto []byte) error {
+	_, err := db.c.Exec("UPDATE chats SET photo=? WHERE id=?", newPhoto, chatId)
+	if err != nil {
+		fmt.Println("Error updating chat photo. SetChatPhoto chats.go", err)
 		return err
 	}
 	return nil

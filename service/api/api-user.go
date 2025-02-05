@@ -24,7 +24,7 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var tempId string = ps.ByName("user_id")
 	user_id, err := strconv.Atoi(tempId)
 	if err != nil {
-		fmt.Println("Error converting user id(api). ", err)
+		fmt.Println("Error converting user id. getUser api-user.go", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -34,17 +34,16 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	user = apiUser(tmpUser)
 
 	if erro != nil {
-		fmt.Println("Error fetching user(api). ", erro)
+		fmt.Println("Error fetching user. getUser api-user.go", erro)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	_, _ = w.Write([]byte("User found"))
-	fmt.Println("User found", user)
 
 	w.Header().Set("Content-Type", "application/json")
 	userJSON, err := json.Marshal(user)
 	if err != nil {
-		fmt.Println("Error marshalling user(api). ", err)
+		fmt.Println("Error marshalling user. getUser api-user.go", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,7 +57,7 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 	authentication := r.Header.Get("Authorization")
 	headerId, err := strconv.Atoi(authentication)
 	if err != nil {
-		fmt.Println("Error during conversion to int")
+		fmt.Println("Error during conversion to int setUsername api-user.go")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -72,9 +71,9 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 	user = apiUser(DBuser)
 
 	err = json.NewDecoder(r.Body).Decode(&user)
-	fmt.Println(user)
+	// fmt.Println(user)
 	if err != nil {
-		fmt.Println("Error decoding username(api). ", err)
+		fmt.Println("Error decoding username. setUsername api-user.go ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -86,7 +85,7 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 
 	err = rt.db.SetUsername(user.Id, user.Username)
 	if err != nil {
-		fmt.Println("Error updating username. ", err)
+		fmt.Println("Error updating username. setUsername api-user.go", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -114,7 +113,7 @@ func (rt *_router) setPhoto(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 	user = apiUser(DBuser)
 
-	newPhotoMulti, fileHeader, err := r.FormFile("photo")
+	newPhotoMulti, fileHeader, err := r.FormFile("userPhoto")
 	if err != nil {
 		fmt.Println("Photo not found")
 		w.WriteHeader(http.StatusBadRequest)
@@ -143,4 +142,23 @@ func (rt *_router) setPhoto(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	_, _ = w.Write([]byte("Photo updated"))
+}
+
+func (rt *_router) getAllUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	users, err := rt.db.GetAllUsers()
+	if err != nil {
+		fmt.Println("Error fetching all users getAllUsers api-user.go. ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	usersJSON, err := json.Marshal(users)
+	if err != nil {
+		fmt.Println("Error marshalling users. ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(usersJSON)
 }

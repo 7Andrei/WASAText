@@ -79,18 +79,15 @@ export default {
 
     <div class="container mt-4 row">
         <div class="row border rounded">
-            <h3 v-if="chat">{{ chat.chatName }}</h3>
+            <h3 v-if="chat">
+                <router-link :to="`/chats/${chatId}/settings`">{{ chat.chatName }}</router-link>
+            </h3>
             <p v-else>Loading chat</p>
         </div>
     </div>
     <div class="mt-4">
-        <!-- <div class="row justify-content-left" v-for="message in chat.chatMessages" :key="message.id">
-            
-        </div> -->
-
         <div class="row justify-content-start">
             <div class="col-md-8">
-                <!-- <div v-for="message in chat.chatMessages" :key="message.id" class="card mb-2"> -->
                 <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                     <div class="card" style="max-width: 50%;">
                         <div class="card-body">

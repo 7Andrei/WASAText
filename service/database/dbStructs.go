@@ -5,9 +5,9 @@ import (
 )
 
 type User struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Photo    []byte `json:"photo"`
+	Id       int    `json:"userId"`
+	Username string `json:"userName"`
+	Photo    []byte `json:"userPhoto"`
 }
 
 type Message struct {

@@ -14,10 +14,15 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/users/:user_id", rt.getUser)
 	rt.router.PUT("/settings/changename", rt.setUsername)
 	rt.router.PUT("/settings/changephoto", rt.setPhoto)
+	rt.router.GET("/users", rt.getAllUsers)
 
 	rt.router.GET("/chats/:chat_id", rt.getChat)
 	rt.router.GET("/chats", rt.getAllChats)
 	rt.router.POST("/createchat", rt.createChat)
+	rt.router.PUT("/chats/:chat_id/settings/changename", rt.setChatName)
+	rt.router.PUT("/chats/:chat_id/settings/changephoto", rt.setChatPhoto)
+	rt.router.POST("/chats/:chat_id/settings/add", rt.addUserToChat)
+	// rt.router.POST("/chats/:chat_id/settings/leave", rt.leaveChat)
 
 	rt.router.POST("/chats/:chat_id", rt.sendMessage)
 
