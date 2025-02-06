@@ -1,12 +1,24 @@
-openapi: 3.0.3
+openapi: 3.0.3 
 info:
-  title: Test
-  description: test
+  title: WASAText api documentation
+  description: Api documentation for the WASAText application
   version: '1'
 
 servers:
   - url: http://localhost:3000
     description: Local server
+
+tags:
+  - name: login
+    description: User login
+  - name: User settings
+    description: User settings
+  - name: Chats
+    description: Chat operations
+  - name: Messages
+    description: Message operations
+  - name: Chat settings
+    description: Chat settings
 
 paths:
 
@@ -21,9 +33,11 @@ paths:
         content:
           application/json:
             schema:
+              description: User details
               type: object
               properties:
                 userName:
+                  description: User name
                   type: string
                   example: Giggio
                   pattern: 'ˆ.*?$'
@@ -36,9 +50,11 @@ paths:
           content:
            application/json:
             schema:
+              description: User id
               type: object
               properties:
                 identifier:
+                  description: User id
                   type: string
                   example: "abcdef012345"
                   
@@ -53,9 +69,11 @@ paths:
         content:
           application/json:
             schema:
+              description: New name
               type: object
               properties:
                 newName:
+                  description: New name
                   type: string
                   example: Andrei2
                   pattern: '^,*?$'
@@ -67,6 +85,16 @@ paths:
           description: Name changed
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
 
   /settings/changePhoto:
     put:
@@ -79,9 +107,11 @@ paths:
         content:
           application/json:
             schema: 
+              description: New photo
               type: object
               properties:
                 newPhoto:
+                  description: New photo
                   type: string
                   format: binary
       responses:
@@ -89,6 +119,16 @@ paths:
           description: Profile picture changed
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
 
   /chats:
     get:
@@ -102,81 +142,119 @@ paths:
           content:
            application/json:
             schema:
+              description: Chats
               type: array
               items:
-                $ref: "#components/schemas/chat"
+                $ref: "#/components/schemas/chat"
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
 
   /chats/{chatId}:
-    get:
-      tags: ["Chats"]
-      summary: Lets the user view one specific conversation
-      description: Given the conversation ID it will return all the messages in that conversation
-      operationId: getConversation
-      parameters:
+    parameters:
         - name: chatId
           in: path
           required: true
           description: View one conversation
           schema:
+            description: Chat id
             type: string
             example: "abcdef012345"
+    
+    get:
+      tags: ["Chats"]
+      summary: Lets the user view one specific conversation
+      description: Given the conversation ID it will return all the messages in that conversation
+      operationId: getConversation
       responses:
         '200':
           description: Fetched all messages
           content:
             application/json:
               schema:
+                description: Chat
                 $ref: "#/components/schemas/chat"
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: Chat not found
-        
-                    
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Chat not found"
+                       
     post:
       tags: [Messages]
       summary: Send a message
       description: Sends the message to the selected chat
       operationId: sendMessage
-      parameters:
-        - name: chatId
-          in: path
-          required: true
-          description: View one conversation
-          schema:
-            type: string
-            example: "abcdef012345"
       requestBody:
         description: Message
         content:
           application/json:
             schema:
+              description: Message
               $ref: "#/components/schemas/message"
       responses:
         '204':
           description: "Message sent succesfully"
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         
-  /chats/{chatId}/{messageId}:
+  /chats/{chatIdUrl}/messages/{messageIdUrl}:
     post:
       tags: [Messages]
       summary: Forwards a message
       description: Forwards the selected message to a new chat
       operationId: forwardMessage
       parameters:
-        - name: chatId
+        - name: chatIdUrl
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
-        - name: messageId
+        - name: messageIdUrl
           in: path
           required: true
           schema:
+            description: Message id
             type: string
             example: "message5763"
       requestBody:
@@ -184,12 +262,15 @@ paths:
         content:
           application/json:
             schema:
+              description: Chat to forward to
               type: object
               properties:
                 messageId:
+                  description: Message id
                   type: string
                   example: "message4357"
                 chatId: 
+                  description: Chat id
                   type: string
                   example: "chat349875"
       responses:
@@ -197,10 +278,30 @@ paths:
           description: "Message forwarded"
         '401':
           description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: "Message or chat not found"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message or chat not found"
             
-  /chats/{chatId}/{messageId}/reaction:
+  /chats/{chatId}/messages/{messageId}/reaction:
     put:
       tags: [Messages]
       summary: Add a reaction to a message
@@ -211,12 +312,14 @@ paths:
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
         - name: messageId
           in: path
           required: true
           schema:
+            description: Message id
             type: string
             example: "message5763"
       requestBody:
@@ -224,9 +327,11 @@ paths:
         content:
           application/json:
             schema:
+              description: Emoji to add
               type: object
               properties:
                 reaction:
+                  description: Reaction
                   type: string
                   example: "emoji"
       responses:
@@ -234,10 +339,30 @@ paths:
           description: "Reaction added"
         '401':
           description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: "Message not found"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message not found"
 
-  /chats/{chatId}/{messageId}/reaction/{reactionId}:
+  /chats/{chatId}/messages/{messageId}/reaction/{reactionId}:
     delete:
       tags: [Messages]
       summary: Deletes the reaction to the message
@@ -248,18 +373,21 @@ paths:
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
         - name: messageId
           in: path
           required: true
           schema:
+            description: Message id
             type: string
             example: "message5763"
         - name: reactionId
           in: path
           required: true
           schema:
+            description: Reaction id
             type: string
             example: "reaction3895"
       responses:
@@ -267,10 +395,30 @@ paths:
           description: "Reaction deleted"
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: "Message/Reaction not found"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message/Reaction not found"
 
-  /chats/{chatId}/{messageId}/delete:
+  /chats/{chatId}/messages/{messageId}/delete:
     delete:
       tags: [Messages]
       summary: Deletes a message
@@ -281,12 +429,14 @@ paths:
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
         - name: messageId
           in: path
           required: true
           schema:
+            description: Message id
             type: string
             example: "message5763"
       responses:
@@ -294,20 +444,41 @@ paths:
           description: Message deleted
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: Message not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message not found"
 
-  /chats/{chatId}/settings/add:
+  /chats/{chatIdUrl}/settings/add:
     post:
       tags: [Chat settings]
       summary: Add user to group
       description: Adds a new user to the group
       operationId: addToGroup
       parameters:
-        - name: chatId
+        - name: chatIdUrl
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
       requestBody:
@@ -315,12 +486,15 @@ paths:
         content:
           application/json:
             schema:
+              description: User to add
               type: object
               properties:
                 userId:
+                  description: User id
                   type: string
                   example: "user2373"
                 chatId:
+                  description: Chat id
                   type: string
                   example: "chat3987"
       responses:
@@ -328,20 +502,41 @@ paths:
           description: User added
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: User/Group not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Group not found"
 
-  /chats/{chatId}/settings/leave:
+  /chats/{chatIdUrl}/settings/leave:
     delete:
       tags: [Chat settings]
       summary: Leaves the selected group
       description: Leaves the selected group as long as the user is in it
       operationId: leaveGroup
       parameters:
-        - name: chatId
+        - name: chatIdUrl
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
       responses:
@@ -349,21 +544,42 @@ paths:
           description: Group left
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '404':
           description: Group not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Group not found"
 
-  /chats/{chatId}/settings/changeGroupName:
+  /chats/{chatIdUrl}/settings/changeGroupName:
     put:
       tags: [Chat settings]
       summary: Changes group name
       description: Changes selected group name
       operationId: setGroupName
       parameters:
-        - name: chatId
+        - name: chatIdUrl
           in: path
           required: true
           description: View one conversation
           schema:
+            description: Chat id
             type: string
             example: "abcdef012345"
       requestBody:
@@ -371,12 +587,15 @@ paths:
         content:
           application/json:
             schema: 
+              description: New name
               type: object
               properties:
                 newName:
+                  description: New name
                   type: string
                   example: "the small salami the return 2"
                 chatId:
+                  description: Chat id
                   type: string
                   example: "chat3975"
       responses:
@@ -384,22 +603,53 @@ paths:
           description: Name changed
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '403':
           description: Forbidden can't change chat name
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Forbidden can't change chat name"
         '404':
           description: Gruop not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Group not found"
 
-  /chats/{chatId}/settings/changePhoto:
+  /chats/{chatIdUrl}/settings/changePhoto:
     put:
       tags: [Chat settings]
       summary: Change group photo
       description: Changes the group photo
       operationId: setGroupPhoto
       parameters:
-        - name: chatId
+        - name: chatIdUrl
           in: path
           required: true
           schema:
+            description: Chat id
             type: string
             example: "chat3762"
       requestBody:
@@ -407,9 +657,11 @@ paths:
         content:
           application/json:
             schema: 
+              description: New photo
               type: object
               properties:
                 newPhoto:
+                  description: New photo
                   type: string
                   format: binary
       responses:
@@ -417,10 +669,40 @@ paths:
           description: Photo changed
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
         '403':
           description: Forbidden can't change chat photo
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Forbidden can't change chat photo"
         '404':
           description: Group not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Group not found"
 
   /createchat:
     post:
@@ -433,15 +715,19 @@ paths:
         content:
           application/json:
             schema:
+              description: Chat details
               type: object
               properties:
                 chatName:
+                  description: Chat name
                   type: string
                   example: "University chat"
                 chatType:
+                  description: Chat type
                   type: string
                   example: "group"
                 chatParticipants:
+                  description: Chat participants
                   type: array
                   items:
                       # description: user
@@ -455,9 +741,11 @@ paths:
           content:
            application/json:
             schema:
+              description: Chat id
               type: object
               properties:
                 chatId:
+                  description: Chat id
                   type: string
                   example: "chat37543"
 
@@ -468,31 +756,43 @@ components:
       type: object
       properties:
         text:
+          description: Message text
           type: string
           example: "Ciao"
         photo:
+          description: Message photo
           type: string
           format: binary
           example: null
         sender: 
+          description: Sender id
           type: integer
+          minimum: 1
+          maximum: 999
           example: 1
         receiver:
+          description: Receiver id
           type: integer
+          minimum: 1
+          maximum: 999
           example: 3
         dateTime:
+          description: Date and time of the message
           type: string
           format: date-time
           example: "2024-12-02T16:38:00"
         reactions:
+          description: Reactions to the message
           type: array
           items:
             type: object
             properties:
               utente:
+                description: User name
                 type: string
                 example: "William"
               reazione:
+                description: Reaction
                 type: string
                 example: "emoji"
 
@@ -501,6 +801,8 @@ components:
       properties:
         userId:
           type: integer
+          minimum: 1
+          maximum: 999
           example: "1"
         userName:
           type: string
@@ -514,22 +816,28 @@ components:
       type: object
       properties:
         chatId:
+          description: Chat id
           type: string
           example: "chat37543"
         chatName:
+          description: Chat name
           type: string
           example: "The salami 2 the return"
         chatPhoto:
+          description: Chat photo
           type: string
           format: binary
         chatType:
+          description: Chat type
           type: string
           example: "Group"
         chatParticipants:
+          description: Chat participants
           type: array
           items:
             $ref: "#/components/schemas/user"
         chatMessages:
+          description: Chat messages
           type: array
           items:
             $ref: "#/components/schemas/message"
