@@ -22,7 +22,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/chats/:chat_id/settings/changename", rt.setChatName)
 	rt.router.PUT("/chats/:chat_id/settings/changephoto", rt.setChatPhoto)
 	rt.router.POST("/chats/:chat_id/settings/add", rt.addUserToChat)
-	// rt.router.POST("/chats/:chat_id/settings/leave", rt.leaveChat)
+	rt.router.DELETE("/chats/:chat_id/settings/leave", rt.leaveChat)
 
 	rt.router.POST("/chats/:chat_id", rt.sendMessage)
 

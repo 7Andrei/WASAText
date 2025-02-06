@@ -59,6 +59,20 @@ export default {
                console.log("puppa", error)
            }
        },
+       async leaveChat()
+       {
+            try
+            {
+                let response = await this.$axios.delete(`/chats/${this.chatId}/settings/leave`, {headers:{Authorization: this.userId}})
+                alert("Chat left")
+                this.$router.push("/chats")
+            }
+            catch (error)
+            {
+                console.log("puppa", error)
+            }
+       }
+       
     },
     async mounted()
     {
@@ -120,7 +134,7 @@ export default {
             </div>
             <div class="col-6">
                 <!-- <button @click="logout" class="btn btn-danger mt-4">Logout</button> -->
-                <button @click = "leave" class="btn btn-danger mt-5">Leave Chat</button>
+                <button @click = "leaveChat" class="btn btn-danger mt-5">Leave Chat</button>
             </div>
         </div>
         <!-- <div class="col-4">

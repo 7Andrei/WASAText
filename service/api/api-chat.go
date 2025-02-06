@@ -324,3 +324,33 @@ func (rt *_router) addUserToChat(w http.ResponseWriter, r *http.Request, ps http
 
 	_, _ = w.Write([]byte("Participant added"))
 }
+
+func (rt *_router) leaveChat(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var chatId int
+	var userId int
+
+	var tempId string = ps.ByName("chat_id")
+	chatId, err := strconv.Atoi(tempId)
+	if err != nil {
+		fmt.Println("Error converting chat id leaveChat api-chat.go. ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	authentication := r.Header.Get("Authorization")
+	userId, err = strconv.Atoi(authentication)
+	if err != nil {
+		fmt.Println("Error during conversion to int leaveChat api-chat.go")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.LeaveChat(chatId, userId)
+	if err != nil {
+		fmt.Println("Error leaving chat. leaveChat api-chat.go ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, _ = w.Write([]byte("Chat left"))
+}

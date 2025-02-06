@@ -54,6 +54,7 @@ type AppDatabase interface {
 	AddParticipant(chatId int, participantId int) error
 	SetChatName(chatId int, newName string) error
 	SetChatPhoto(chatId int, newPhoto []byte) error
+	LeaveChat(chatId int, userId int) error
 
 	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
 }

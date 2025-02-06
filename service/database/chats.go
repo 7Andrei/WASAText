@@ -122,3 +122,12 @@ func (db *appdbimpl) SetChatPhoto(chatId int, newPhoto []byte) error {
 	}
 	return nil
 }
+
+func (db *appdbimpl) LeaveChat(chatId int, userId int) error {
+	_, err := db.c.Exec("DELETE FROM user_chats WHERE chatId=? AND userId=?", chatId, userId)
+	if err != nil {
+		fmt.Println("Error leaving chat. LeaveChat chats.go", err)
+		return err
+	}
+	return nil
+}
