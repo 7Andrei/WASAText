@@ -39,8 +39,8 @@ paths:
                 userName:
                   description: User name
                   type: string
-                  example: Giggio
-                  pattern: 'ˆ.*?$'
+                  example: giggio
+                  pattern: '^.*?$'
                   minLength: 3
                   maxLength: 16
         required: true
@@ -61,6 +61,8 @@ paths:
   /settings/changeName:
     put:
       tags: ["User settings"]
+      security:
+        - bearerAuth: []
       summary: Lets the user change his Username
       description: Requests new name and then changes the user's name
       operationId: setMyUserName
@@ -75,8 +77,8 @@ paths:
                 newName:
                   description: New name
                   type: string
-                  example: Andrei2
-                  pattern: '^,*?$'
+                  example: andrei
+                  pattern: '^.*?$'
                   minLength: 3
                   maxLength: 16
         required: true
@@ -99,6 +101,8 @@ paths:
   /settings/changePhoto:
     put:
       tags: ["User settings"]
+      security:
+        - bearerAuth: []
       summary: Change profile picture
       description: Changes user profile picture
       operationId: setMyPhoto
@@ -133,6 +137,8 @@ paths:
   /chats:
     get:
       tags: ["Chats"]
+      security:
+        - bearerAuth: []
       summary: Lets the user view all of his conversations
       description: Shows user all of their conversations
       operationId: getMyConversations
@@ -144,6 +150,9 @@ paths:
             schema:
               description: Chats
               type: array
+              default: []
+              minItems: 0
+              maxItems: 999
               items:
                 $ref: "#/components/schemas/chat"
         '401':
@@ -172,6 +181,8 @@ paths:
     
     get:
       tags: ["Chats"]
+      security:
+        - bearerAuth: []
       summary: Lets the user view one specific conversation
       description: Given the conversation ID it will return all the messages in that conversation
       operationId: getConversation
@@ -210,6 +221,8 @@ paths:
                        
     post:
       tags: [Messages]
+      security:
+        - bearerAuth: []
       summary: Send a message
       description: Sends the message to the selected chat
       operationId: sendMessage
@@ -239,11 +252,14 @@ paths:
   /chats/{chatIdUrl}/messages/{messageIdUrl}:
     post:
       tags: [Messages]
+      security:
+        - bearerAuth: []
       summary: Forwards a message
       description: Forwards the selected message to a new chat
       operationId: forwardMessage
       parameters:
         - name: chatIdUrl
+          description: Chat id
           in: path
           required: true
           schema:
@@ -251,6 +267,7 @@ paths:
             type: string
             example: "chat3762"
         - name: messageIdUrl
+          description: Message id
           in: path
           required: true
           schema:
@@ -304,11 +321,14 @@ paths:
   /chats/{chatId}/messages/{messageId}/reaction:
     put:
       tags: [Messages]
+      security:
+        - bearerAuth: []
       summary: Add a reaction to a message
       description: Add the selected emoji as a reaction to a message
       operationId: commentMessage
       parameters:
         - name: chatId
+          description: Chat id
           in: path
           required: true
           schema:
@@ -316,6 +336,7 @@ paths:
             type: string
             example: "chat3762"
         - name: messageId
+          description: Message id
           in: path
           required: true
           schema:
@@ -365,11 +386,14 @@ paths:
   /chats/{chatId}/messages/{messageId}/reaction/{reactionId}:
     delete:
       tags: [Messages]
+      security:
+        - bearerAuth: []
       summary: Deletes the reaction to the message
       description: Deletes the added reaction to the selected message
       operationId: uncommentMessage
       parameters:
         - name: chatId
+          description: Chat id
           in: path
           required: true
           schema:
@@ -377,6 +401,7 @@ paths:
             type: string
             example: "chat3762"
         - name: messageId
+          description: Message id
           in: path
           required: true
           schema:
@@ -384,6 +409,7 @@ paths:
             type: string
             example: "message5763"
         - name: reactionId
+          description: Reaction id
           in: path
           required: true
           schema:
@@ -421,11 +447,14 @@ paths:
   /chats/{chatId}/messages/{messageId}/delete:
     delete:
       tags: [Messages]
+      security:
+        - bearerAuth: []
       summary: Deletes a message
       description: Deletes the selected message as long as it was sent by the user
       operationId: deleteMessage
       parameters:
         - name: chatId
+          description: Chat id
           in: path
           required: true
           schema:
@@ -433,6 +462,7 @@ paths:
             type: string
             example: "chat3762"
         - name: messageId
+          description: Message id
           in: path
           required: true
           schema:
@@ -470,11 +500,14 @@ paths:
   /chats/{chatIdUrl}/settings/add:
     post:
       tags: [Chat settings]
+      security:
+        - bearerAuth: []
       summary: Add user to group
       description: Adds a new user to the group
       operationId: addToGroup
       parameters:
         - name: chatIdUrl
+          description: Chat id
           in: path
           required: true
           schema:
@@ -491,8 +524,10 @@ paths:
               properties:
                 userId:
                   description: User id
-                  type: string
-                  example: "user2373"
+                  type: integer
+                  minimum: 1
+                  maximum: 999
+                  example: 373
                 chatId:
                   description: Chat id
                   type: string
@@ -528,11 +563,14 @@ paths:
   /chats/{chatIdUrl}/settings/leave:
     delete:
       tags: [Chat settings]
+      security:
+        - bearerAuth: []
       summary: Leaves the selected group
       description: Leaves the selected group as long as the user is in it
       operationId: leaveGroup
       parameters:
         - name: chatIdUrl
+          description: Chat id
           in: path
           required: true
           schema:
@@ -570,6 +608,8 @@ paths:
   /chats/{chatIdUrl}/settings/changeGroupName:
     put:
       tags: [Chat settings]
+      security:
+        - bearerAuth: []
       summary: Changes group name
       description: Changes selected group name
       operationId: setGroupName
@@ -641,11 +681,14 @@ paths:
   /chats/{chatIdUrl}/settings/changePhoto:
     put:
       tags: [Chat settings]
+      security:
+        - bearerAuth: []
       summary: Change group photo
       description: Changes the group photo
       operationId: setGroupPhoto
       parameters:
         - name: chatIdUrl
+          description: Chat id
           in: path
           required: true
           schema:
@@ -707,6 +750,8 @@ paths:
   /createchat:
     post:
       tags: ["Chats"]
+      security:
+        - bearerAuth: []
       summary: Create a new chat
       description: Create a new chat
       operationId: createChat
@@ -729,6 +774,8 @@ paths:
                 chatParticipants:
                   description: Chat participants
                   type: array
+                  minItems: 1
+                  maxItems: 999
                   items:
                       # description: user
                       # type: integer
@@ -763,7 +810,7 @@ components:
           description: Message photo
           type: string
           format: binary
-          example: null
+          example: ""
         sender: 
           description: Sender id
           type: integer
@@ -784,6 +831,8 @@ components:
         reactions:
           description: Reactions to the message
           type: array
+          minItems: 0
+          maxItems: 999
           items:
             type: object
             properties:
@@ -803,14 +852,14 @@ components:
           type: integer
           minimum: 1
           maximum: 999
-          example: "1"
+          example: 1
         userName:
           type: string
           example: "luiif"
         userPhoto:
           type: string
           format: binary
-          example: null
+          example: ""
         
     chat:
       type: object
@@ -827,6 +876,7 @@ components:
           description: Chat photo
           type: string
           format: binary
+          example: ""
         chatType:
           description: Chat type
           type: string
@@ -834,11 +884,15 @@ components:
         chatParticipants:
           description: Chat participants
           type: array
+          minItems: 1
+          maxItems: 999
           items:
             $ref: "#/components/schemas/user"
         chatMessages:
           description: Chat messages
           type: array
+          minItems: 0
+          maxItems: 999
           items:
             $ref: "#/components/schemas/message"
 
