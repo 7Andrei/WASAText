@@ -33,3 +33,12 @@ func (db *appdbimpl) ForwardMessage(messageId int, messageReceiver int, messageF
 	}
 	return nil
 }
+
+func (db *appdbimpl) DeleteMessage(messageId int) error {
+	_, err := db.c.Exec("DELETE FROM messages WHERE id = ?", messageId)
+	if err != nil {
+		fmt.Println("Error deleting message(DeleteMessage chats.go)\n", err)
+		return err
+	}
+	return nil
+}

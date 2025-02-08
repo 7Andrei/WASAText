@@ -58,6 +58,7 @@ type AppDatabase interface {
 
 	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
 	ForwardMessage(messageId int, messageReceiver int, messageForwarded int) error
+	DeleteMessage(messageId int) error
 }
 
 type appdbimpl struct {

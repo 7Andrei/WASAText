@@ -67,3 +67,33 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 }
+
+func (rt *_router) deleteMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	userId := r.Header.Get("Authorization")
+	if userId == "" {
+		fmt.Println("userId header not found")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("userIdInt:", userIdInt)
+
+	tempInt, err := strconv.Atoi(ps.ByName("message_id"))
+	if err != nil {
+		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.DeleteMessage(tempInt)
+	if err != nil {
+		fmt.Println("Error deleting message(deleteMessage api-message.go)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
