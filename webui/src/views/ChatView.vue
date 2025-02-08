@@ -61,6 +61,30 @@ export default {
             {
                 console.log("puppa", error)
             }
+        },
+        async addReaction(messageId, reaction)
+        {
+            try 
+            {
+                let response = await this.$axios.post(`/chats/${this.chatId}/messages/${messageId}/reactions`, {reaction: reaction}, {headers:{Authorization: this.userId}})
+                this.refreshMessages()
+            } 
+            catch (error) 
+            {
+                console.log("puppa", error)
+            }
+        },
+        async deleteReaction(messageId, reactionId)
+        {
+            try 
+            {
+                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}/reactions/${reactionId}`, {headers:{Authorization: this.userId}})
+                this.refreshMessages()
+            } 
+            catch (error) 
+            {
+                console.log("puppa", error)
+            }
         }
     },
     async mounted()
@@ -93,21 +117,44 @@ export default {
     </div>
     <div class="mt-4">
         <div class="row justify-content-start">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                     <div class="card" style="max-width: 50%;">
-                        <div class="card-body position-relative">
+                        <div class="card-body">
                             <router-link :to="`/chats/${chatId}/messages/${message.id}`">
                                 <h5 class="card-title">{{ getUser(message.sender) }}</h5>
                             </router-link>
                             <p class="card-text">{{ message.text }}</p>
                             <small class="text-muted float-end">{{ message.dateTime }}</small>
-                            <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link position-absolute top-0 end-0">
-                                <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
-                            </button>
+                            <div class="d-flex flex-column align-items-end mt-2">
+                                <div class="d-flex">
+                                    <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link">
+                                        <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
+                                    </button>
+                                    <div class="dropdown ms-2">
+                                        <button class="btn btn-link dropdown-toggle" type="button" id="emojiMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            😊
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="emojiMenuButton">
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😀')">😀</span></li>
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😂')">😂</span></li>
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😍')">😍</span></li>
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😢')">😢</span></li>
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '👍')">👍</span></li>
+                                            <li><span class="dropdown-item" @click="addReaction(message.id, '👎')">👎</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap mt-2">
+                                    <button v-for="reaction in message.reactions" :key="reaction.id" @click="deleteReaction(message.id, reaction.id)" class="btn btn-sm btn-outline-secondary me-1">
+                                        {{ reaction.reaction }}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="mb-5"></div>
             </div>
         </div>
 

@@ -60,7 +60,27 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 		return chat, err
 	}
 
-	// fmt.Println("Chat found:", chat.Id, chat.Name, chat.ChatType, chat.Participants)
+	for i, message := range chat.Messages {
+		messageId := message.Id
+		rows, err = db.c.Query("SELECT reaction, userId, messageId FROM reactions WHERE messageId=?", messageId)
+		if err != nil {
+			fmt.Println("Error fetching chat reactions(GetChat - chats.go). ", err)
+			return chat, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var reaction Reaction
+			err := rows.Scan(&reaction.Emoji, &reaction.UserId, &reaction.MessageId)
+			if err != nil {
+				fmt.Println("Error scanning chat reactions(GetChat - chats.go). ", err)
+				return chat, err
+			}
+			chat.Messages[i].Reactions = append(chat.Messages[i].Reactions, reaction)
+		}
+
+	}
+
 	return chat, nil
 }
 

@@ -50,16 +50,26 @@ func apiChat(chat database.Chat) Chat {
 }
 
 type Message struct {
-	Id        int       `json:"id"`
-	Content   string    `json:"text"`
-	Photo     []byte    `json:"photo"`
-	Sender    int       `json:"sender"`
-	Receiver  int       `json:"receiver"`
-	Forwarded int       `json:"forwarded"`
-	TimeStamp time.Time `json:"dateTime"`
+	Id        int        `json:"id"`
+	Content   string     `json:"text"`
+	Photo     []byte     `json:"photo"`
+	Sender    int        `json:"sender"`
+	Receiver  int        `json:"receiver"`
+	Forwarded int        `json:"forwarded"`
+	TimeStamp time.Time  `json:"dateTime"`
+	Reactions []Reaction `json:"reactions"`
 }
 
 func apiMessage(message database.Message) Message {
+	reactions := make([]Reaction, len(message.Reactions))
+	for i, reaction := range message.Reactions {
+		reactions[i] = Reaction{
+			UserId:    reaction.UserId,
+			MessageId: reaction.MessageId,
+			Emoji:     reaction.Emoji,
+		}
+	}
+
 	return Message{
 		Id:        message.Id,
 		Content:   message.Content,
@@ -68,5 +78,12 @@ func apiMessage(message database.Message) Message {
 		Receiver:  message.Receiver,
 		Forwarded: message.Forwarded,
 		TimeStamp: message.TimeStamp,
+		Reactions: reactions,
 	}
+}
+
+type Reaction struct {
+	UserId    int    `json:"userId"`
+	MessageId int    `json:"messageId"`
+	Emoji     string `json:"reaction"`
 }

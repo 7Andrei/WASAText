@@ -357,8 +357,8 @@ paths:
                     minLength: 1
                     maxLength: 999
             
-  /chats/{chatId}/messages/{messageId}/reaction:
-    put:
+  /chats/{chatId}/messages/{messageId}/reactions:
+    post:
       tags: [Messages]
       security:
         - bearerAuth: []

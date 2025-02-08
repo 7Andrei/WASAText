@@ -11,13 +11,14 @@ type User struct {
 }
 
 type Message struct {
-	Id        int       `json:"id"`
-	Content   string    `json:"content"`
-	Photo     []byte    `json:"photo"`
-	Sender    int       `json:"sender"`
-	Receiver  int       `json:"receiver"`
-	Forwarded int       `json:"forwarded"`
-	TimeStamp time.Time `json:"timestamp"`
+	Id        int        `json:"id"`
+	Content   string     `json:"content"`
+	Photo     []byte     `json:"photo"`
+	Sender    int        `json:"sender"`
+	Receiver  int        `json:"receiver"`
+	Forwarded int        `json:"forwarded"`
+	TimeStamp time.Time  `json:"timestamp"`
+	Reactions []Reaction `json:"reactions"`
 }
 
 type Chat struct {
@@ -32,5 +33,5 @@ type Chat struct {
 type Reaction struct {
 	UserId    int    `json:"userId"`
 	MessageId int    `json:"messageId"`
-	Emoji     string `json:"emoji"`
+	Emoji     string `json:"reaction"`
 }

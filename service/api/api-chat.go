@@ -50,9 +50,9 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	// fmt.Println("Temp Chat:", tmpChat.Messages)
 	chat = apiChat(tmpChat)
-	// _, _ = w.Write([]byte("Chat found"))
-	// fmt.Println("Chat found", chat)
+	// fmt.Println("Chat nuova:", chat.Messages)
 
 	w.Header().Set("Content-Type", "application/json")
 	chatJSON, err := json.Marshal(chat)

@@ -42,3 +42,21 @@ func (db *appdbimpl) DeleteMessage(messageId int) error {
 	}
 	return nil
 }
+
+func (db *appdbimpl) AddReaction(userId int, messageId int, reaction string) error {
+	_, err := db.c.Exec("INSERT INTO reactions (reaction, userId, messageId) VALUES (?, ?, ?)", reaction, userId, messageId)
+	if err != nil {
+		fmt.Println("Error adding reaction(AddReaction chats.go)\n", err)
+		return err
+	}
+	return nil
+}
+
+func (db *appdbimpl) DeleteReaction(userId, messageId int) error {
+	_, err := db.c.Exec("DELETE FROM reactions WHERE userId=? AND messageId=? ", userId, messageId)
+	if err != nil {
+		fmt.Println("Error deleting reaction(DeleteReaction chats.go)\n", err)
+		return err
+	}
+	return nil
+}
