@@ -2,13 +2,14 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
 func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 	var chat Chat
 	err := db.c.QueryRow("SELECT id, name, photo, type FROM chats WHERE id=?", chatId).Scan(&chat.Id, &chat.Name, &chat.Photo, &chat.ChatType)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("Chat not found(DB). ", err)
 		return chat, err
 	}
@@ -33,6 +34,10 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 		}
 		chat.Participants = append(chat.Participants, user)
 	}
+	if rows.Err() != nil {
+		fmt.Println("Error fetching chat participants(GetChat - chats.go). ", err)
+		return chat, err
+	}
 
 	rows, err = db.c.Query("SELECT id, content, sender, receiver, COALESCE(forwarded, 0) AS forwarded, sentTime FROM messages WHERE receiver=?", chatId)
 	if err != nil {
@@ -49,6 +54,10 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 			return chat, err
 		}
 		chat.Messages = append(chat.Messages, message)
+	}
+	if rows.Err() != nil {
+		fmt.Println("Error fetching chat messages(GetChat - chats.go). ", err)
+		return chat, err
 	}
 
 	// fmt.Println("Chat found:", chat.Id, chat.Name, chat.ChatType, chat.Participants)
@@ -92,6 +101,10 @@ func (db *appdbimpl) GetAllChats(userId int) ([]Chat, error) {
 			return chats, err
 		}
 		chats = append(chats, chat)
+	}
+	if rows.Err() != nil {
+		fmt.Println("Error fetching chat data(DB). ", err)
+		return chats, err
 	}
 	return chats, nil
 }

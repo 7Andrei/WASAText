@@ -57,6 +57,7 @@ type AppDatabase interface {
 	LeaveChat(chatId int, userId int) error
 
 	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
+	ForwardMessage(messageId int, messageReceiver int, messageForwarded int) error
 }
 
 type appdbimpl struct {
@@ -94,7 +95,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 						 sentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						 FOREIGN KEY(sender) references users(id),
 						 FOREIGN KEY(receiver) references chats(id),
-						 FOREIGN KEY(forwarded) references chats(id));`
+						 FOREIGN KEY(forwarded) references users(id));`
 		_, err = db.Exec(messagesStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure messages: %w", err)

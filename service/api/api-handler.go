@@ -25,6 +25,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/chats/:chat_id/settings/leave", rt.leaveChat)
 
 	rt.router.POST("/chats/:chat_id", rt.sendMessage)
+	rt.router.POST("/chats/:chat_id/messages/:message_id", rt.forwardMessage)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)

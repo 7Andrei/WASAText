@@ -55,7 +55,7 @@ type Message struct {
 	Photo     []byte    `json:"photo"`
 	Sender    int       `json:"sender"`
 	Receiver  int       `json:"receiver"`
-	Forwarded uint64    `json:"forwarded"`
+	Forwarded int       `json:"forwarded"`
 	TimeStamp time.Time `json:"dateTime"`
 }
 

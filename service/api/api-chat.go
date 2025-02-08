@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -38,7 +39,7 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 	chat.Id = chat_Id
 
 	tmpChat, err := rt.db.GetChat(chat.Id)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("Chat not found(api). ", err)
 		w.WriteHeader(http.StatusNotFound)
 		return

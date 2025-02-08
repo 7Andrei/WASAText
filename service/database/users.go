@@ -2,13 +2,14 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
 func (db *appdbimpl) Login(userName string) (int, error) {
 	var userId int
 	err := db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		_, err := db.c.Exec("INSERT INTO users (name) VALUES (?)", userName)
 		if err != nil {
 			fmt.Println("Error creating user. Login users.go", err)
@@ -68,6 +69,10 @@ func (db *appdbimpl) GetAllUsers() ([]User, error) {
 			return nil, err
 		}
 		users = append(users, user)
+	}
+	if rows.Err() != nil {
+		fmt.Println("Error fetching user data. GetAllUsers users.go. ", err)
+		return nil, err
 	}
 	return users, nil
 }

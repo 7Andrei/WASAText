@@ -40,15 +40,14 @@ export default {
             this.chat=response.data
         },
         getUser(userId)
-        {
+        {   
             const user = this.chat.chatParticipants.find(participant => participant.userId === userId);
-            console.log(user.userName)
-            return user.userName
+            console.log(userId)
+            // return user.userName
+            return user ? user.userName : 'U.n.k.n.o.w.n';
         },
         isSender(senderId)
         {
-            // console.log("senderId, userId", senderId, this.userId)
-            // console.log(senderId == this.userId)
             return senderId == this.userId
         }
     },
@@ -91,7 +90,9 @@ export default {
                 <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                     <div class="card" style="max-width: 50%;">
                         <div class="card-body">
-                            <h5 class="card-title">{{ getUser(message.sender) }}</h5>
+                            <router-link :to="`/chats/${chatId}/messages/${message.id}`">
+                                <h5 class="card-title">{{ getUser(message.sender) }}</h5>
+                            </router-link>
                             <p class="card-text">{{ message.text }}</p>
                             <small class="text-muted float-end">{{ message.dateTime }}</small>
                         </div>
