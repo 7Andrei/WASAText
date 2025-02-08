@@ -49,21 +49,28 @@ export default {
         isSender(senderId)
         {
             return senderId == this.userId
+        },
+        async deleteMessage(messageId)
+        {
+            try 
+            {
+                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}/delete`, {headers:{Authorization: this.userId}})
+                this.refreshMessages()
+            } 
+            catch (error) 
+            {
+                console.log("puppa", error)
+            }
         }
     },
     async mounted()
     {
         this.userId = sessionStorage.getItem("userId")
-        // console.log(this.userId)
         this.chatId = this.$route.params.chatId
-        // console.log("vue chatId", this.chatId)
         try 
         {
-            // let response = await this.$axios.get('/chats/$chatId', {headers:{Authorization: this.userId}})
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
-            // console.log(response.data)
             this.chat=response.data
-            // console.log(this.chat)
 
 
         } 
@@ -89,12 +96,15 @@ export default {
             <div class="col-md-8">
                 <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                     <div class="card" style="max-width: 50%;">
-                        <div class="card-body">
+                        <div class="card-body position-relative">
                             <router-link :to="`/chats/${chatId}/messages/${message.id}`">
                                 <h5 class="card-title">{{ getUser(message.sender) }}</h5>
                             </router-link>
                             <p class="card-text">{{ message.text }}</p>
                             <small class="text-muted float-end">{{ message.dateTime }}</small>
+                            <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link position-absolute top-0 end-0">
+                                <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
