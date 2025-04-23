@@ -32,7 +32,7 @@ export default {
         } 
         catch (error) 
         {
-            console.log("puppa", error)
+            console.log("Errore(placeholder)", error)
         }
     }
 }

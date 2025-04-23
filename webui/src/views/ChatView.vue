@@ -30,7 +30,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
         },
 
@@ -59,7 +59,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
         },
         async addReaction(messageId, reaction)
@@ -71,7 +71,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
         },
         async deleteReaction(messageId, reactionId)
@@ -83,7 +83,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
         }
     },
@@ -100,7 +100,7 @@ export default {
         } 
         catch (error) 
         {
-            console.log("puppa", error)
+            console.log("Errore(placeholder)", error)
         }
     }
 }

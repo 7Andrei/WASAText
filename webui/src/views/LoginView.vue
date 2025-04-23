@@ -21,7 +21,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
         }
     },
@@ -35,7 +35,7 @@ export default {
 <template>
     <form @submit.prevent="login">
         <input type="text" v-model="userName">
-        <button type="submit">Puppa chi clicca</button>
+        <button type="submit">Login</button>
     </form>
 
     <h1 v-if = "userId">

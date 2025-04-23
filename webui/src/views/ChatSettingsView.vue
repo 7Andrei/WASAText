@@ -26,7 +26,7 @@ export default {
             } 
             catch (error) 
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
        },
        async changeName(event)
@@ -39,7 +39,7 @@ export default {
             }
             catch (error)
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
        },
        handleFileUpload(event)
@@ -56,7 +56,7 @@ export default {
            } 
            catch (error) 
            {
-               console.log("puppa", error)
+               console.log("Errore(placeholder)", error)
            }
        },
        async leaveChat()
@@ -69,7 +69,7 @@ export default {
             }
             catch (error)
             {
-                console.log("puppa", error)
+                console.log("Errore(placeholder)", error)
             }
        }
        
@@ -85,7 +85,7 @@ export default {
         } 
         catch (error) 
         {
-            console.log("puppa", error)
+            console.log("Errore(placeholder)", error)
         }
         try 
         {
@@ -95,7 +95,7 @@ export default {
         } 
         catch (error) 
         {
-            console.log("puppa", error)
+            console.log("Errore(placeholder)", error)
         }
         this.users = this.users.filter(user => !this.chatParticipants.some(participant => participant.userId === user.userId))
     }
