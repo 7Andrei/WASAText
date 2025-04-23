@@ -55,8 +55,10 @@ export default {
 </script>
 <template>
     <div class="container mt-4">
-        <div v-if="!userId" class="row border rounded">
-            <h3>Unauthorized</h3>
+        <div v-if="!userId" class="row rounded">
+            <div class="text-center">
+                <h3>Unauthorized</h3>
+            </div>
             <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
         </div>
         <div v-else>

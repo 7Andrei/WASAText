@@ -107,66 +107,74 @@ export default {
 </script>
 <template>
 
-    <div class="container mt-4 row">
-        <div class="row border rounded">
-            <h3 v-if="chat">
-                <router-link :to="`/chats/${chatId}/settings`">{{ chat.chatName }}</router-link>
-            </h3>
-            <p v-else>Loading chat</p>
+    <div v-if="!userId" class="row rounded">
+        <div class="text-center">
+            <h3>Unauthorized</h3>
         </div>
+        <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
     </div>
-    <div class="mt-4">
-        <div class="row justify-content-start">
-            <div class="col-md-10">
-                <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
-                    <div class="card" style="max-width: 50%;">
-                        <div class="card-body">
-                            <router-link :to="`/chats/${chatId}/messages/${message.id}`">
-                                <h5 class="card-title">{{ getUser(message.sender) }}</h5>
-                            </router-link>
-                            <p class="card-text">{{ message.text }}</p>
-                            <small class="text-muted float-end">{{ message.dateTime }}</small>
-                            <div class="d-flex flex-column align-items-end mt-2">
-                                <div class="d-flex">
-                                    <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link">
-                                        <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
-                                    </button>
-                                    <div class="dropdown ms-2">
-                                        <button class="btn btn-link dropdown-toggle" type="button" id="emojiMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                            😊
+    <div v-else>
+        <div class="container mt-4 row">
+            <div class="row border rounded">
+                <h3 v-if="chat">
+                    <router-link :to="`/chats/${chatId}/settings`">{{ chat.chatName }}</router-link>
+                </h3>
+                <p v-else>Loading chat</p>
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="row justify-content-start">
+                <div class="col-md-10">
+                    <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
+                        <div class="card" style="max-width: 50%;">
+                            <div class="card-body">
+                                <router-link :to="`/chats/${chatId}/messages/${message.id}`">
+                                    <h5 class="card-title">{{ getUser(message.sender) }}</h5>
+                                </router-link>
+                                <p class="card-text">{{ message.text }}</p>
+                                <small class="text-muted float-end">{{ message.dateTime }}</small>
+                                <div class="d-flex flex-column align-items-end mt-2">
+                                    <div class="d-flex">
+                                        <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link">
+                                            <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
                                         </button>
-                                        <ul class="dropdown-menu" aria-labelledby="emojiMenuButton">
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😀')">😀</span></li>
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😂')">😂</span></li>
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😍')">😍</span></li>
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '😢')">😢</span></li>
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '👍')">👍</span></li>
-                                            <li><span class="dropdown-item" @click="addReaction(message.id, '👎')">👎</span></li>
-                                        </ul>
+                                        <div class="dropdown ms-2">
+                                            <button class="btn btn-link dropdown-toggle" type="button" id="emojiMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                😊
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="emojiMenuButton">
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '😀')">😀</span></li>
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '😂')">😂</span></li>
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '😍')">😍</span></li>
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '😢')">😢</span></li>
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '👍')">👍</span></li>
+                                                <li><span class="dropdown-item" @click="addReaction(message.id, '👎')">👎</span></li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="d-flex flex-wrap mt-2">
-                                    <button v-for="reaction in message.reactions" :key="reaction.id" @click="deleteReaction(message.id, reaction.id)" class="btn btn-sm btn-outline-secondary me-1">
-                                        {{ reaction.reaction }}
-                                    </button>
+                                    <div class="d-flex flex-wrap mt-2">
+                                        <button v-for="reaction in message.reactions" :key="reaction.id" @click="deleteReaction(message.id, reaction.id)" class="btn btn-sm btn-outline-secondary me-1">
+                                            {{ reaction.reaction }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="mb-5"></div>
                 </div>
-                <div class="mb-5"></div>
             </div>
-        </div>
 
-    </div>
-    <div class="container row">
-        <div class="message-form-container">
-            <form @submit.prevent="sendMessage">
-                <div class="input-group">
-                    <input type="text" class="form-control" v-model="message" placeholder="Your message">
-                    <button type="submit" class="btn btn-primary">Send</button>
-                </div>
-            </form>
+        </div>
+        <div class="container row">
+            <div class="message-form-container">
+                <form @submit.prevent="sendMessage">
+                    <div class="input-group">
+                        <input type="text" class="form-control" v-model="message" placeholder="Your message">
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>

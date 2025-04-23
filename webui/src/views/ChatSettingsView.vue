@@ -102,43 +102,51 @@ export default {
 }
 </script>
 <template>
-    <div class="row">
-        <h2>Chat Settings</h2>
-        <div class="row">
-            <div class="col-6">
-                <form @submit.prevent="changePhoto" class="mt-4">
-                    <div class="mb-3">
-                        <label for="chatPhoto" class="form-label">Change Photo</label>
-                        <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Change Photo</button>
-                </form>
-            </div>
-            <div class="col-6">
-                <form @submit.prevent="changeName" class="mt-4">
-                    <div class="mb-3">
-                        <label for="chatName" class="form-label">Change Name</label>
-                        <input type="text" class="form-control" id="chatName" v-model="chatName" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Change Name</button>
-                </form>
-            </div>
-            <div class="col-6">
-                <label for="chatParticipants" class="form-label">Select Participants</label>
-                <form @submit.prevent="addUser">
-                    <select multiple class="form-control mt-4 mb-3" id="chatParticipants" v-model="usersToAdd">
-                        <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Add Users</button>
-                </form>
-            </div>
-            <div class="col-6">
-                <!-- <button @click="logout" class="btn btn-danger mt-4">Logout</button> -->
-                <button @click = "leaveChat" class="btn btn-danger mt-5">Leave Chat</button>
-            </div>
+    <div v-if="!userId" class="row rounded">
+        <div class="text-center">
+            <h3>Unauthorized</h3>
         </div>
-        <!-- <div class="col-4">
-            <button @click="logout" class="btn btn-danger mt-4">Logout</button>
-        </div> -->
+        <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
+    </div>
+    <div v-else>
+        <div class="row">
+            <h2>Chat Settings</h2>
+            <div class="row">
+                <div class="col-6">
+                    <form @submit.prevent="changePhoto" class="mt-4">
+                        <div class="mb-3">
+                            <label for="chatPhoto" class="form-label">Change Photo</label>
+                            <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Photo</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <form @submit.prevent="changeName" class="mt-4">
+                        <div class="mb-3">
+                            <label for="chatName" class="form-label">Change Name</label>
+                            <input type="text" class="form-control" id="chatName" v-model="chatName" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Name</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <label for="chatParticipants" class="form-label">Select Participants</label>
+                    <form @submit.prevent="addUser">
+                        <select multiple class="form-control mt-4 mb-3" id="chatParticipants" v-model="usersToAdd">
+                            <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Add Users</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <!-- <button @click="logout" class="btn btn-danger mt-4">Logout</button> -->
+                    <button @click = "leaveChat" class="btn btn-danger mt-5">Leave Chat</button>
+                </div>
+            </div>
+            <!-- <div class="col-4">
+                <button @click="logout" class="btn btn-danger mt-4">Logout</button>
+            </div> -->
+        </div>
     </div>
 </template>
