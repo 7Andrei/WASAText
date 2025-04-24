@@ -69,67 +69,93 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 	//var user User
 	var chat Chat
 
-	// if !Authorized(r, rt) {
-	// 	fmt.Println("Unauthorized")
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	return
-	// }
+	if !Authorized(r, rt) {
+		fmt.Println("Unauthorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
+		return
+	}
 
-	// err := json.NewDecoder(r.Body).Decode(&chat)
-	// if err != nil {
-	// 	fmt.Println("Error decoding chat Id(api). ", err, "\nChat:", chat)
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
+	userIdHeader := r.Header.Get("Authorization")
+	if userIdHeader == "" {
+		fmt.Println("userId header not found")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("userId header not found"))
+		return
+	}
 
-	newPhotoMulti, fileHeader, err := r.FormFile("chatPhoto")
+	userId, err := strconv.Atoi(userIdHeader)
 	if err != nil {
-		fmt.Println("Photo not found", err)
+		fmt.Println("Error converting userId header to int createChat api-chat.go", err)
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error converting userId header to int"))
 		return
 	}
 
-	fileName := fileHeader.Filename
-	// fmt.Println("File name:")
-	// fmt.Println("File name:", fileName)
-	if !IsPhoto(fileName) {
-		fmt.Println("Photo not found")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	chat.ChatType = r.FormValue("chatType")
+	if chat.ChatType == "group" {
+		newPhotoMulti, fileHeader, err := r.FormFile("chatPhoto")
+		if err != nil {
+			fmt.Println("Photo not found", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Photo not found"))
+			return
+		}
 
-	newPhoto, err := io.ReadAll(newPhotoMulti)
-	if err != nil {
-		fmt.Println("Error reading file")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+		fileName := fileHeader.Filename
+		// fmt.Println("File name:")
+		// fmt.Println("File name:", fileName)
+		if !IsPhoto(fileName) {
+			fmt.Println("Photo not found")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Photo not found"))
+			return
+		}
 
-	chat.Photo = newPhoto
+		newPhoto, err := io.ReadAll(newPhotoMulti)
+		if err != nil {
+			fmt.Println("Error reading file")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error reading file"))
+			return
+		}
+
+		chat.Photo = newPhoto
+	}
 
 	chat.Name = r.FormValue("chatName")
-	chat.ChatType = r.FormValue("chatType")
 	participants := r.FormValue("chatParticipants")
+	fmt.Println("utenti ", participants)
 	err = json.Unmarshal([]byte(participants), &chat.Participants)
 	if err != nil {
 		fmt.Println("Error decoding participants:", err)
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error decoding participants"))
 		return
 	}
+	fmt.Println(chat.Participants)
 
 	if !(chat.ChatType == "private" || chat.ChatType == "group") {
 		fmt.Println("Chat type can only be private or group")
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Chat type can only be private or group"))
+		return
+	}
+	if (len(chat.Participants) > 1) && (chat.ChatType == "private") {
+		fmt.Println("Chat type is private but more than one participant")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Chat type is private but more than one participant was selected"))
 		return
 	}
 
 	// fmt.Println("Dati chat:", chat.Name, chat.ChatType)
-	fmt.Println("partecipanti:", chat.Participants)
+	// fmt.Println("partecipanti:", chat.Participants)
 
 	chat.Id, err = rt.db.CreateChat(chat.Name, chat.Photo, chat.ChatType)
 	if err != nil {
 		fmt.Println("Error creating chat. ", err)
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error creating chat"))
 		return
 	}
 
@@ -141,8 +167,16 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		if err != nil {
 			fmt.Println("Error adding partecipant (AddParticipants api-chat)\n", err)
 			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error adding partecipant"))
 			return
 		}
+	}
+	err = rt.db.AddParticipant(chat.Id, userId)
+	if err != nil {
+		fmt.Println("Error adding partecipant (AddParticipants api-chat)\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error adding partecipant"))
+		return
 	}
 }
 

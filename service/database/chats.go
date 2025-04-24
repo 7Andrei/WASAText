@@ -93,7 +93,7 @@ func (db *appdbimpl) CreateChat(chatName string, chatPhoto []byte, chatType stri
 		fmt.Println("Error creating chat(DB). ", err)
 		return chatId, err
 	}
-	fmt.Println("Chat created:", chatName, chatPhoto, chatType)
+	fmt.Println("Chat created:", chatName, chatType)
 
 	return chatId, nil
 }

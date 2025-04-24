@@ -7,18 +7,21 @@ export default {
             chatType: "",
             chatPhoto: null,
             chatParticipants: {},
-            users: {}
+            users: {},
+            error: null
         }
     },
     methods: 
     {
         async createChat(event)
         {
+            this.error=null
             event.preventDefault()
             let chat = new FormData()
             chat.append('chatName', this.chatName)
-            chat.append('chatType', this.chatType)
+            chat.append('chatType', "group")
             chat.append('chatPhoto', this.chatPhoto)
+            // this.chatParticipants[this.userId] = { userId: this.userId };
             chat.append('chatParticipants', JSON.stringify(this.chatParticipants))
             try 
             {
@@ -29,6 +32,11 @@ export default {
             catch (error) 
             {
                 console.log("Errore(placeholder)", error)
+                console.log(this.chatParticipants)
+                console.log(this.chatName)
+                console.log(this.chatType)
+                console.log(this.chatPhoto)
+                this.error = error.response.data
             }
         },
         handleFileUpload(event)
@@ -43,17 +51,21 @@ export default {
         {
             let response = await this.$axios.get(`/users`, {headers:{Authorization: this.userId}})
             this.users=response.data
-
-
+            this.users.splice(this.users.indexOf(this.userId), 1)
         } 
         catch (error) 
         {
             console.log("Errore(placeholder)", error)
+            this.error = error
         }
     }
+    
 }
 </script>
 <template>
+    <div v-if="error" class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
     <div class="container mt-4">
         <div v-if="!userId" class="row rounded">
             <div class="text-center">
@@ -75,7 +87,7 @@ export default {
                         <label for="chatPhoto" class="form-label">Chat Photo</label>
                         <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
                     </div>
-                    <div class="mb-3 col-2">
+                    <!-- <div class="mb-3 col-2">
                         <label for="chatType" class="form-label">Chat Type</label>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" id="group" value="group" required v-model="chatType">
@@ -85,7 +97,7 @@ export default {
                             <input class="form-check-input" type="radio" id="private" value="private" required v-model="chatType">
                             <label class="form-check-label" for="private">Private</label>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row">
                     <div class="mb-3 col-10">
