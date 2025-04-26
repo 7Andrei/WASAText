@@ -159,7 +159,6 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	_, _ = w.Write([]byte("chat created"))
 	// fmt.Println("chat created", chat)
 
 	for _, participant := range chat.Participants {
@@ -178,6 +177,8 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		w.Write([]byte("Error adding partecipant"))
 		return
 	}
+
+	w.Write([]byte(strconv.Itoa(chat.Id)))
 }
 
 func (rt *_router) getAllChats(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

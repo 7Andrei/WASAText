@@ -8,6 +8,9 @@ export default {
             users:[],
             searchUser: "",
             foundUsers:[],
+            show: false,
+            privateChats: [],
+            groupChats: [],
         }
     },
     methods: 
@@ -18,6 +21,7 @@ export default {
             let participants=[{userId: privateId, userName: "", userPhoto: null}]
             this.error=null
             let chat = new FormData()
+            let returnId = null
 
             chat.append('chatType', "private")
             console.log("participants", participants)
@@ -25,7 +29,8 @@ export default {
             try 
             {
                 let response = await this.$axios.post('/createchat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
-                // console.log(response.data)
+                console.log(response.data)
+                returnId = response.data
                 // this.$router.push("/chats")
             } 
             catch (error) 
@@ -35,6 +40,23 @@ export default {
                 console.log(this.chatType)
                 this.error = error.response.data
             }
+            return returnId
+        },
+        async createOrSend(privateUserId)
+        {
+            for (let privateChat of this.privateChats)
+            {
+                for (let user of privateChat.chatParticipants)
+                {
+                    if (user.userId==privateUserId)
+                    {
+                        this.$router.push(`/chats/${privateChat.id}`)
+                        return
+                    }
+                }
+            }
+            let chatId = await this.createChat(privateUserId)
+            this.$router.push(`/chats/${chatId}`)
         },
     },
     async mounted()
@@ -44,8 +66,8 @@ export default {
         try 
         {
             let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
-            // console.log(response.data)
             this.chats=response.data
+            // console.log(this.chats)
 
 
         } 
@@ -58,22 +80,36 @@ export default {
             let response = await this.$axios.get("/users", {headers:{Authorization: this.userId}})
             this.users=response.data
             this.users.splice(this.users.indexOf(this.userId), 1)
-            console.log(this.users)
         }
         catch (error) 
         {
             console.log("Errore(DaCambiare)", error)
         }
+        for (let chat of this.chats)
+        {
+            if(chat.chatType == "private")
+            {
+                this.privateChats.push(chat)
+            }
+            else
+            {
+                this.groupChats.push(chat)
+            }
+        }
+        console.log(this.privateChats)
+        // console.log(this.groupChats)
+
     },
     watch: {
         searchUser: function(){
-            if(this.searchUser.length>0)
+            if(this.searchUser.length>3)
             {
                 this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
                 return this.foundUsers
             }
             else
             {
+                this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
                 return this.users
             }
         }
@@ -96,13 +132,19 @@ export default {
                     <div class="input-group mb-3">
                         <span class="input-group-text">Lente</span>
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="privateChat" placeholder="Search user" v-model="searchUser">
+                            <input 
+                                type="text" 
+                                class="form-control"   
+                                id="privateChat"   
+                                placeholder="Search user" 
+                                v-model="searchUser" >
                             <label for="floatingInputGroup1">Username</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-12 mb-4" v-for="user in foundUsers" :key="user.userId">
-                    <button @click="createChat(user.userId)" class="btn btn-primary">{{ user.userName }}</button>
+                    <button @click="createOrSend(user.userId)" class="btn btn-primary">{{ user.userName }}</button>
+                    <!-- <button @click="$router.push(`/chats/${user.userId}`)" class="btn btn-primary">{{ user.userName }}</button> -->
                 </div>
                 <div class="col-md-12" v-for="chat in chats" :key="chat.id">
                     <div class="card mb-4">
@@ -110,7 +152,15 @@ export default {
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-10">
-                                        <h5 class="card-title"><a :href="`/#/chats/${chat.id}`" class="card-title">{{ chat.chatName }}</a></h5>
+
+                                        <h5 v-if="chat.chatType=='group'" class="card-title">
+                                            <a :href="`/#/chats/${chat.id}`" class="card-title">{{ chat.chatName }}</a>
+                                        </h5>
+                                        <h5 v-else class="card-title">
+                                            <a :href="`/#/chats/${chat.id}`" class="card-title">
+                                                {{ chat.chatParticipants.find(participant => participant.userId !== userId)?.userName || 'Private Chat' }}
+                                            </a>
+                                        </h5>
                                         <p class="card-text">{{ chat.chatType }}</p>
                                     </div>
                                     <div class="col-2">

@@ -42,7 +42,7 @@ export default {
         getUser(userId)
         {   
             const user = this.chat.chatParticipants.find(participant => participant.userId === userId);
-            console.log(userId)
+            // console.log(userId)
             // return user.userName
             return user ? user.userName : 'U.n.k.n.o.w.n';
         },
@@ -66,6 +66,10 @@ export default {
         {
             try 
             {
+                for (let tmpReaction of this.chat.chatMessages)
+                {
+                    console.log(tmpReaction)
+                }
                 let response = await this.$axios.post(`/chats/${this.chatId}/messages/${messageId}/reactions`, {reaction: reaction}, {headers:{Authorization: this.userId}})
                 this.refreshMessages()
             } 
@@ -95,6 +99,8 @@ export default {
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
+            // console.log(this.chat)
+            return this.chat
 
 
         } 
@@ -116,8 +122,15 @@ export default {
     <div v-else>
         <div class="container mt-4 row">
             <div class="row border rounded">
-                <h3 v-if="chat">
-                    <router-link :to="`/chats/${chatId}/settings`">{{ chat.chatName }}</router-link>
+                <h3 v-if="chat.chatType == 'private'">
+                    <router-link :to="`/chats/${chatId}/settings`">
+                        {{ chat.chatParticipants.find(participant => participant.userId !== userId)?.userName || 'Private Chat' }}
+                    </router-link>
+                </h3>
+                <h3 v-else-if ="chat.chatType == 'group'">
+                    <router-link :to="`/chats/${chatId}/settings`">
+                        {{ chat.chatName }}
+                    </router-link>
                 </h3>
                 <p v-else>Loading chat</p>
             </div>

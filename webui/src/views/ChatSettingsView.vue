@@ -6,7 +6,7 @@ export default {
             chatPhoto: null,
             chatName: "",
             chatId: 0,
-            // chat: {},
+            chat: {},
             chatParticipants: {},
             users: {},
             user: {},
@@ -102,11 +102,13 @@ export default {
 }
 </script>
 <template>
-    <div v-if="!userId" class="row rounded">
-        <div class="text-center">
+    <div v-if="!userId" class="text-center">
             <h3>Unauthorized</h3>
-        </div>
         <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
+    </div>
+    <div v-else-if="chat.chatType=='private'" class="text-center">
+        <h3> Can't modify private chat </h3>
+        <button @click="$router.push('/chats')" class="btn btn-primary">Back to Chats</button>
     </div>
     <div v-else>
         <div class="row">
