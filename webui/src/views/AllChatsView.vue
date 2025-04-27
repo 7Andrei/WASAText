@@ -196,7 +196,8 @@ export default {
                                         <p class="card-text">{{ chat.chatType }}</p>
                                     </div>
                                     <div class="col-2">
-                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="128" width="128" alt="Chat Photo">
+                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="128" width="128" alt="Chat Photo" v-if="chat.chatPhoto">
+                                        <img src="https://placehold.co/128x128?text=Placeholder" height="128" width="128" alt="Placeholder" v-else>
                                     </div>
                                     <div class="row ms-2">
                                         <div class="col-12" v-for="message in chat.chatMessages" :key="message.id">

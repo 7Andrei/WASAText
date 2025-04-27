@@ -135,9 +135,7 @@ export default {
         <div class="container mt-4 row">
             <div class="row border rounded">
                 <h3 v-if="chat.chatType == 'private'">
-                    <router-link :to="`/chats/${chatId}/settings`">
-                        {{ chat.chatParticipants.find(participant => participant.userId !== userId)?.userName || 'Private Chat' }}
-                    </router-link>
+                    {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                 </h3>
                 <h3 v-else-if ="chat.chatType == 'group'">
                     <router-link :to="`/chats/${chatId}/settings`">
