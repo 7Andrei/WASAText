@@ -66,11 +66,23 @@ export default {
         {
             try 
             {
-                for (let tmpReaction of this.chat.chatMessages)
+                const message = this.chat.chatMessages.find(msg => msg.id === messageId);
+                console.log(message);
+                if (message.reactions.length>0)
                 {
-                    console.log(tmpReaction)
+                    for (let i=0; i<message.reactions.length; i++)
+                    {
+                        if (message.reactions[i].userId==this.userId)
+                        {
+                            await this.deleteReaction(messageId, message.reactions[i].id)
+                            console.log("Reazione gia' presente", message.reactions[i].reaction)
+                            // break
+                        }
+                    }
                 }
+
                 let response = await this.$axios.post(`/chats/${this.chatId}/messages/${messageId}/reactions`, {reaction: reaction}, {headers:{Authorization: this.userId}})
+                console.log("Added reaction")
                 this.refreshMessages()
             } 
             catch (error) 

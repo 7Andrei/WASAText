@@ -68,13 +68,39 @@ export default {
             let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
             this.chats=response.data
             // console.log(this.chats)
-
-
         } 
         catch (error) 
         {
             console.log("Errore(DaCambiare)", error)
         }
+        
+
+        try 
+        {
+            let response = await this.$axios.get("/chats", { headers: { Authorization: this.userId } });
+            this.chats = response.data;
+
+            // Sort chats based on the timestamp of the last message
+            this.chats.sort((a, b) => {
+                const lastMessageA = a.chatMessages[a.chatMessages.length - 1];
+                const lastMessageB = b.chatMessages[b.chatMessages.length - 1];
+
+                // Handle cases where chats have no messages
+                const timeA = lastMessageA ? new Date(lastMessageA.dateTime).getTime() : 0;
+                const timeB = lastMessageB ? new Date(lastMessageB.dateTime).getTime() : 0;
+
+                return timeB - timeA; // Sort in descending order (most recent first)
+            }
+            );
+
+            console.log("Sorted Chats:", this.chats);
+        } 
+        catch (error) 
+        {
+            console.log("Errore(DaCambiare)", error);
+        }
+
+
         try 
         {
             let response = await this.$axios.get("/users", {headers:{Authorization: this.userId}})
@@ -144,7 +170,6 @@ export default {
                 </div>
                 <div class="col-md-12 mb-4" v-for="user in foundUsers" :key="user.userId">
                     <button @click="createOrSend(user.userId)" class="btn btn-primary">{{ user.userName }}</button>
-                    <!-- <button @click="$router.push(`/chats/${user.userId}`)" class="btn btn-primary">{{ user.userName }}</button> -->
                 </div>
                 <div class="col-md-12" v-for="chat in chats" :key="chat.id">
                     <div class="card mb-4">
@@ -152,10 +177,16 @@ export default {
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-10">
-
-                                        <h5 v-if="chat.chatType=='group'" class="card-title">
+                                        <div v-if="chat.chatType=='group'">
+                                        <h5 class="card-title">
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">{{ chat.chatName }}</a>
                                         </h5>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item" v-for="participant in chat.chatParticipants" :key="participant.userId">
+                                                {{ participant.userName }}
+                                            </li>
+                                        </ul>
+                                        </div>
                                         <h5 v-else class="card-title">
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">
                                                 {{ chat.chatParticipants.find(participant => participant.userId !== userId)?.userName || 'Private Chat' }}
@@ -168,12 +199,7 @@ export default {
                                     </div>
                                 </div>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item" v-for="participant in chat.chatParticipants" :key="participant.userId">
-                                    <!-- <img :src="`data:image/jpeg;base64,${participant.userPhoto}`" class="rounded-circle me-2" alt="User Photo" width="30" height="30"> -->
-                                    {{ participant.userName }}
-                                </li>
-                            </ul>
+                            
                         </div>
                     </div>
                 </div>

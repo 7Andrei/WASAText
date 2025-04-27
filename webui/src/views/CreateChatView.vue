@@ -51,13 +51,18 @@ export default {
         {
             let response = await this.$axios.get(`/users`, {headers:{Authorization: this.userId}})
             this.users=response.data
-            this.users.splice(this.users.indexOf(this.userId), 1)
+            console.log("Prima", this.users)
+            this.users = this.users.filter(user => user.userId !== parseInt(this.userId));
+            console.log("Dopo", this.users)
         } 
         catch (error) 
         {
             console.log("Errore(placeholder)", error)
             this.error = error
         }
+
+        // this.users = this.users.filter(user => user.id !== this.userId)
+        // console.log(this.users)
     }
     
 }
