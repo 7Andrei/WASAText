@@ -80,20 +80,19 @@ export default {
             let response = await this.$axios.get("/chats", { headers: { Authorization: this.userId } });
             this.chats = response.data;
 
-            // Sort chats based on the timestamp of the last message
             this.chats.sort((a, b) => {
+
                 const lastMessageA = a.chatMessages[a.chatMessages.length - 1];
                 const lastMessageB = b.chatMessages[b.chatMessages.length - 1];
 
-                // Handle cases where chats have no messages
                 const timeA = lastMessageA ? new Date(lastMessageA.dateTime).getTime() : 0;
                 const timeB = lastMessageB ? new Date(lastMessageB.dateTime).getTime() : 0;
 
-                return timeB - timeA; // Sort in descending order (most recent first)
+                return timeB - timeA;
             }
             );
 
-            console.log("Sorted Chats:", this.chats);
+            // console.log("Sorted Chats:", this.chats);
         } 
         catch (error) 
         {
@@ -181,21 +180,28 @@ export default {
                                         <h5 class="card-title">
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">{{ chat.chatName }}</a>
                                         </h5>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item" v-for="participant in chat.chatParticipants" :key="participant.userId">
+
+                                        <div class="d-flex flex-row flex-wrap">
+                                            <span v-for="participant in chat.chatParticipants" :key="participant.userId" class="badge bg-secondary me-2">
                                                 {{ participant.userName }}
-                                            </li>
-                                        </ul>
+                                            </span>
+                                        </div>
+
                                         </div>
                                         <h5 v-else class="card-title">
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">
-                                                {{ chat.chatParticipants.find(participant => participant.userId !== userId)?.userName || 'Private Chat' }}
+                                                {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                                             </a>
                                         </h5>
                                         <p class="card-text">{{ chat.chatType }}</p>
                                     </div>
                                     <div class="col-2">
                                         <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="128" width="128" alt="Chat Photo">
+                                    </div>
+                                    <div class="row ms-2">
+                                        <div class="col-12" v-for="message in chat.chatMessages" :key="message.id">
+                                            {{ message.text }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
