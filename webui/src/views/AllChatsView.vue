@@ -178,7 +178,12 @@ export default {
                                     <div class="col-10">
                                         <div v-if="chat.chatType=='group'">
                                         <h5 class="card-title">
-                                            <a :href="`/#/chats/${chat.id}`" class="card-title">{{ chat.chatName }}</a>
+                                            <a :href="`/#/chats/${chat.id}`" class="card-title">
+                                                {{ chat.chatName }}
+                                            </a>
+                                            <div class="badge bg-primary ms-2">
+                                                {{ chat.chatType }}
+                                            </div>
                                         </h5>
 
                                         <div class="d-flex flex-row flex-wrap">
@@ -192,16 +197,26 @@ export default {
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">
                                                 {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                                             </a>
+                                            <div class="badge bg-primary ms-2">
+                                                {{ chat.chatType }}
+                                            </div>
                                         </h5>
-                                        <p class="card-text">{{ chat.chatType }}</p>
                                     </div>
-                                    <div class="col-2">
-                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="128" width="128" alt="Chat Photo" v-if="chat.chatPhoto">
-                                        <img src="https://placehold.co/128x128?text=Placeholder" height="128" width="128" alt="Placeholder" v-else>
+                                    <div class="col-2 text-end">
+                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto">
+                                        <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                                     </div>
-                                    <div class="row ms-2">
-                                        <div class="col-12" v-for="message in chat.chatMessages" :key="message.id">
-                                            {{ message.text }}
+                                    <div class="row">
+                                        <div class="col-12 mt-2 border-top border-primary" v-if="chat.chatMessages.length">
+                                            <span class="badge bg-primary mt-2 me-1">
+                                                {{ users.find(user => user.userId == chat.chatMessages[chat.chatMessages.length - 1].sender)?.userName || 'Unknown User' }}:
+                                            </span>
+                                            <span class="mt-2">
+                                                {{ chat.chatMessages[chat.chatMessages.length - 1].text }}
+                                            </span>
+                                            <span class="badge bg-secondary float-end mt-2">
+                                                {{ chat.chatMessages[chat.chatMessages.length - 1].dateTime }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
