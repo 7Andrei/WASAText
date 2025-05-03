@@ -5,7 +5,7 @@ info:
   version: '1'
 
 servers:
-  - url: http://localhost:3000
+  - url: http://192.168.1.60:3000
     description: Local server
 
 tags:
@@ -60,7 +60,7 @@ paths:
                   maximum: 999
                   example: 12
                   
-  /settings/changeName:
+  /settings/changename:
     put:
       tags: ["User settings"]
       security:
@@ -103,7 +103,7 @@ paths:
                     maxLength: 999
                     example: "Unauthorized"
 
-  /settings/changePhoto:
+  /settings/changephoto:
     put:
       tags: ["User settings"]
       security:
@@ -435,7 +435,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatId}/messages/{messageId}/reaction/{reactionId}:
+  /chats/{chatId}/messages/{messageId}/reactions/{reactionId}:
     delete:
       tags: [Messages]
       security:
@@ -705,7 +705,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatIdUrl}/settings/changeGroupName:
+  /chats/{chatIdUrl}/settings/changename:
     put:
       tags: [Chat settings]
       security:
@@ -796,7 +796,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatIdUrl}/settings/changePhoto:
+  /chats/{chatIdUrl}/settings/changephoto:
     put:
       tags: [Chat settings]
       security:
