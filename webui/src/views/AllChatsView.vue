@@ -170,7 +170,18 @@ export default {
                 <div class="col-md-12 mb-4" v-for="user in foundUsers" :key="user.userId">
                     <button @click="createOrSend(user.userId)" class="btn btn-primary">{{ user.userName }}</button>
                 </div>
-                <div class="col-md-12" v-for="chat in chats" :key="chat.id">
+                <div v-if="!chats" class="col-md-12">
+                    <div class="alert alert-danger text-center" role="alert">
+                        No chats found
+                    </div>
+                    <div class="text-center">
+                        <button @click="$router.push('/createchat')" class="btn btn-primary">
+                            Create a new chat
+                        </button>
+                        <h2 class="mt-4">Or search Username above to create a private chat</h2>
+                    </div>
+                </div>
+                <div class="col-md-12" v-else v-for="chat in chats" :key="chat.id">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="col-md-12">

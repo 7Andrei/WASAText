@@ -154,7 +154,7 @@ export default {
             <div class="row border rounded">
                 <h3 v-if="chat.chatType == 'private'">
                     {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
-                    <!-- TODO: Mettere foto chat privata/placeholder -->
+                    <!-- DAFARE: Mettere foto chat privata/placeholder -->
                 </h3>
                 <h3 v-else-if ="chat.chatType == 'group'">
                     <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto" class="mt-2 me-2">
@@ -169,13 +169,13 @@ export default {
         <div class="mt-4">
             <div class="row justify-content-start">
                 <div class="col-md-10">
-                    <!-- TODO: Fare card dei messaggi piu' carina -->
+                    <!-- DAFARE: Fare card dei messaggi piu' carina -->
                     <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                         <div class="card" style="max-width: 50%;">
                             <div class="card-body">
                                 <router-link :to="`/chats/${chatId}/messages/${message.id}`">
                                     <h5 class="card-title">{{ getUser(message.sender) }}</h5>
-                                    <!-- TODO: Fixare forward dei messaggi -->
+                                    <!-- DAFARE: Fixare forward dei messaggi -->
                                 </router-link>
                                 <p class="card-text">{{ message.text }}</p>
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
@@ -223,7 +223,7 @@ export default {
                             </div>
                         </form>
                     </div>
-                    <!-- TODO: Finire upload foto -->
+                    <!-- DAFARE: Finire upload foto -->
                     <!-- <div class="col-4">
                         <form @submit.prevent="sendPhoto">
                             <div class="input-group">
