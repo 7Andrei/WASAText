@@ -16,6 +16,8 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var chat Chat
 
+	//GIT Funziona
+
 	// err := json.NewDecoder(r.Body).Decode(&chat)
 	// if err != nil {
 	// 	fmt.Println("Error decoding chat Id(api). ", err)
