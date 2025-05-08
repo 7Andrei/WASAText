@@ -14,12 +14,10 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var user User
 
-	// err := json.NewDecoder(r.Body).Decode(&user)
-	// if err != nil {
-	// 	fmt.Println("Error decoding user Id(api). ", err)
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var tempId string = ps.ByName("user_id")
 	user_id, err := strconv.Atoi(tempId)
@@ -53,6 +51,11 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	var user User
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	authentication := r.Header.Get("Authorization")
 	headerId, err := strconv.Atoi(authentication)
@@ -96,6 +99,11 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 func (rt *_router) setPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	var user User
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	authentication := r.Header.Get("Authorization")
 	headerId, err := strconv.Atoi(authentication)
@@ -145,6 +153,11 @@ func (rt *_router) setPhoto(w http.ResponseWriter, r *http.Request, ps httproute
 }
 
 func (rt *_router) getAllUsers(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	users, err := rt.db.GetAllUsers()
 	if err != nil {

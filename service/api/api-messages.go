@@ -12,6 +12,11 @@ import (
 func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var message Message
 
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	err := json.NewDecoder(r.Body).Decode(&message)
 	if err != nil {
 		fmt.Println("Error decoding message(sendMessage api-message.go)\n", err)
@@ -29,6 +34,11 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 
 func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var message Message
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
@@ -69,6 +79,12 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 }
 
 func (rt *_router) deleteMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
 		fmt.Println("userId header not found")
@@ -100,6 +116,11 @@ func (rt *_router) deleteMessage(w http.ResponseWriter, r *http.Request, ps http
 
 func (rt *_router) addReaction(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var reaction Reaction
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
@@ -137,6 +158,12 @@ func (rt *_router) addReaction(w http.ResponseWriter, r *http.Request, ps httpro
 }
 
 func (rt *_router) deleteReaction(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
 		fmt.Println("userId header not found")
@@ -156,15 +183,6 @@ func (rt *_router) deleteReaction(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	// tmpReactionId := ps.ByName("reaction_id")
-	// fmt.Println("tmpReactionId:", tmpReactionId)
-	// reactionId, err := strconv.Atoi(tmpReactionId)
-	// if err != nil {
-	// 	fmt.Println("Error converting string to int(deleteReaction api-message.go)\n", err)
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
 
 	err = rt.db.DeleteReaction(userIdInt, messageId)
 	if err != nil {

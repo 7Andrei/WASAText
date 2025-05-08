@@ -23,13 +23,13 @@ func Authorized(r *http.Request, rt *_router) bool {
 	fmt.Println(authentication)
 	if err != nil {
 		fmt.Println("Error during conversion to int (Authorized utils.go)\n", err)
-		//w.WriteHeader(http.StatusBadRequest)
+		// w.WriteHeader(http.StatusBadRequest)
 		return false
 	}
 	_, available, err := rt.db.GetUser(headerId)
 
 	if err != nil || !available {
-		//http.Error(w, err.Error(), http.StatusUnauthorized)
+		// http.Error(w, err.Error(), http.StatusUnauthorized)
 		fmt.Println("Unauthorized. ", err)
 		return false
 	}

@@ -78,6 +78,10 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 			}
 			chat.Messages[i].Reactions = append(chat.Messages[i].Reactions, reaction)
 		}
+		if rows.Err() != nil {
+			fmt.Println("Error fetching chat reactions(GetChat - chats.go). ", err)
+			return chat, err
+		}
 
 	}
 

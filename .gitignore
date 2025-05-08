@@ -22,3 +22,4 @@ docker-compose.yml
 webui/vite.config.js
 .devcontainer/devcontainer.json
 docker-compose.yaml
+.golangci.yml
