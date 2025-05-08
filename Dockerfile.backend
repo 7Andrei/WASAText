@@ -1,0 +1,32 @@
+FROM golang:1.23-alpine AS build
+
+RUN apk add gcc musl-dev
+
+# set workspace directory
+WORKDIR /workspace
+
+# copy needed files
+COPY cmd/ cmd/
+COPY service/ service/
+COPY vendor/ vendor/
+COPY go.mod .
+COPY go.sum .
+
+# build the project
+RUN CGO_ENABLED=1 go build -o /workspace/wasatext ./cmd/webapi
+
+
+FROM alpine:latest
+
+# set the working directory
+WORKDIR /usr/src/app
+
+# copy the build files from the previous stage
+COPY --from=build /workspace/wasatext ./
+RUN chmod +x /usr/src/app/wasatext
+
+# expose the port
+EXPOSE 3000
+
+# run the application
+CMD ["./wasatext"]
