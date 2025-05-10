@@ -21,7 +21,7 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	var tempId string = ps.ByName("chat_id")
+	var tempId = ps.ByName("chat_id")
 	chat_Id, err := strconv.Atoi(tempId)
 	if err != nil {
 		http.Error(w, "Error converting chat id", http.StatusBadRequest)
@@ -132,7 +132,12 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	w.Write([]byte(strconv.Itoa(chat.Id)))
+	chatId := strconv.Itoa(chat.Id)
+	_, err = w.Write([]byte(chatId))
+	if err != nil {
+		http.Error(w, "Error writing response", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -186,7 +191,7 @@ func (rt *_router) setChatName(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	var tempId string = ps.ByName("chat_id")
+	var tempId = ps.ByName("chat_id")
 	chatId, err := strconv.Atoi(tempId)
 	if err != nil {
 		http.Error(w, "Error converting chat id", http.StatusBadRequest)
@@ -222,7 +227,7 @@ func (rt *_router) setChatPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	var tempId string = ps.ByName("chat_id")
+	var tempId = ps.ByName("chat_id")
 	chatId, err := strconv.Atoi(tempId)
 	if err != nil {
 		http.Error(w, "Error converting chat id", http.StatusBadRequest)
@@ -266,7 +271,7 @@ func (rt *_router) addUserToChat(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	var tempId string = ps.ByName("chat_id")
+	var tempId = ps.ByName("chat_id")
 	chatId, err := strconv.Atoi(tempId)
 	if err != nil {
 		http.Error(w, "Error converting chat id", http.StatusBadRequest)
@@ -298,7 +303,7 @@ func (rt *_router) leaveChat(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	var tempId string = ps.ByName("chat_id")
+	var tempId = ps.ByName("chat_id")
 	chatId, err := strconv.Atoi(tempId)
 	if err != nil {
 		http.Error(w, "Error converting chat id", http.StatusBadRequest)

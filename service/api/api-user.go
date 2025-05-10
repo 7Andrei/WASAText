@@ -19,7 +19,7 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	var tempId string = ps.ByName("user_id")
+	var tempId = ps.ByName("user_id")
 	user_id, err := strconv.Atoi(tempId)
 	if err != nil {
 		fmt.Println("Error converting user id. getUser api-user.go", err)
