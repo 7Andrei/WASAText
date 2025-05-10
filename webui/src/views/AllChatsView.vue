@@ -188,21 +188,20 @@ export default {
                                 <div class="row">
                                     <div class="col-10">
                                         <div v-if="chat.chatType=='group'">
-                                        <h5 class="card-title">
-                                            <a :href="`/#/chats/${chat.id}`" class="card-title">
-                                                {{ chat.chatName }}
-                                            </a>
-                                            <div class="badge bg-primary ms-2">
-                                                {{ chat.chatType }}
+                                            <h5 class="card-title">
+                                                <a :href="`/#/chats/${chat.id}`" class="card-title">
+                                                    {{ chat.chatName }}
+                                                </a>
+                                                <div class="badge bg-primary ms-2">
+                                                    {{ chat.chatType }}
+                                                </div>
+                                            </h5>
+
+                                            <div class="d-flex flex-row flex-wrap">
+                                                <span v-for="participant in chat.chatParticipants" :key="participant.userId" class="badge bg-secondary me-2">
+                                                    {{ participant.userName }}
+                                                </span>
                                             </div>
-                                        </h5>
-
-                                        <div class="d-flex flex-row flex-wrap">
-                                            <span v-for="participant in chat.chatParticipants" :key="participant.userId" class="badge bg-secondary me-2">
-                                                {{ participant.userName }}
-                                            </span>
-                                        </div>
-
                                         </div>
                                         <h5 v-else class="card-title">
                                             <a :href="`/#/chats/${chat.id}`" class="card-title">
@@ -214,13 +213,14 @@ export default {
                                         </h5>
                                     </div>
                                     <div class="col-2 text-end">
-                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto">
+                                        <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto && chat.chatType=='group'">
+                                        <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64" alt="User Photo" v-else-if ="chat.chatType=='private'">
                                         <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 mt-2 border-top border-primary" v-if="chat.chatMessages.length">
                                             <span class="badge bg-primary mt-2 me-1">
-                                                {{ users.find(user => user.userId == chat.chatMessages[chat.chatMessages.length - 1].sender)?.userName || 'Unknown User' }}:
+                                                {{ chat.chatParticipants.find(user => user.userId == chat.chatMessages[chat.chatMessages.length - 1].sender)?.userName || 'Unknown User' }}
                                             </span>
                                             <span class="mt-2">
                                                 {{ chat.chatMessages[chat.chatMessages.length - 1].text }}

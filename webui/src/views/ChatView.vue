@@ -158,10 +158,11 @@ export default {
     </div>
     <div v-else>
         <div class="container mt-4 row">
-            <div class="row border rounded">
+            <div class="row border-bottom border-primary">
                 <h3 v-if="chat.chatType == 'private'">
+                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64" alt="User Photo" v-if ="chat.chatType=='private'">
+                    <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                     {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
-                    <!-- DAFARE: Mettere foto chat privata/placeholder -->
                 </h3>
                 <h3 v-else-if ="chat.chatType == 'group'">
                     <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto" class="mt-2 me-2">
@@ -183,6 +184,7 @@ export default {
                                 <router-link :to="`/chats/${chatId}/messages/${message.id}`">
                                     <h5 class="card-title">{{ getUser(message.sender) }}</h5>
                                     <!-- DAFARE: Fixare forward dei messaggi -->
+                                    <!-- DAFARE: Risposta ai messaggi -->
                                 </router-link>
                                 <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
                                 <p class="card-text">{{ message.text }}</p>
@@ -226,7 +228,6 @@ export default {
                         <div class="col-6">
                             <input type="text" class="form-control" v-model="message" placeholder="Your message">
                         </div>
-                <!-- DAFARE: Finire upload foto -->                            
                         <div class="col-4">
                             <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
                         </div>
