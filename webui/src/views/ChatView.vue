@@ -14,27 +14,34 @@ export default {
         async sendMessage(event)
         {
             event.preventDefault()
-            // console.log(this.message)
-            // console.log(this.userId)
-            // console.log(this.chatId)
+            if((this.messagePhoto==null) && (this.message==""))
+            {
+                alert("Please insert a message or a photo")
+                return
+            }
+
+            let messagePhotoForm = new FormData()
+            messagePhotoForm.append('photo', this.messagePhoto)
+            messagePhotoForm.append('text', this.message)
+            messagePhotoForm.append('sender', parseInt(this.userId))
+            messagePhotoForm.append('receiver', parseInt(this.chatId))
+
             try 
             {
-                let response = await this.$axios.post(`/chats/${this.chatId}`, {
-                    text: this.message,
-                    photo: null,
-                    sender: parseInt(this.userId),
-                    receiver: parseInt(this.chatId)},
-                    {headers:{Authorization: this.userId}})
-                // console.log(response.data)
+                await this.$axios.post(`/chats/${this.chatId}`, messagePhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 this.refreshMessages()
                 this.message=""
+                this.messagePhoto=null
             } 
             catch (error) 
             {
                 console.log("Errore(placeholder)", error)
             }
         },
-
+        handleFileUpload(event)
+       {
+           this.messagePhoto = event.target.files[0]
+       },
         async refreshMessages()
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
@@ -177,6 +184,7 @@ export default {
                                     <h5 class="card-title">{{ getUser(message.sender) }}</h5>
                                     <!-- DAFARE: Fixare forward dei messaggi -->
                                 </router-link>
+                                <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
                                 <p class="card-text">{{ message.text }}</p>
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
                                 <div class="d-flex flex-column align-items-end mt-2">
@@ -212,29 +220,22 @@ export default {
             </div>
         </div>
 
-        <div class="container row">
             <div class="message-form-container">
-                <div class="row">
-                    <div class="col-8">
-                        <form @submit.prevent="sendMessage">
-                            <div class="input-group">
-                                <input type="text" class="form-control" v-model="message" placeholder="Your message">
-                                <button type="submit" class="btn btn-primary">Send</button>
-                            </div>
-                        </form>
+                <form @submit.prevent="sendMessage">
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="text" class="form-control" v-model="message" placeholder="Your message">
+                        </div>
+                <!-- DAFARE: Finire upload foto -->                            
+                        <div class="col-4">
+                            <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
+                        </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </div>
                     </div>
-                    <!-- DAFARE: Finire upload foto -->
-                    <!-- <div class="col-4">
-                        <form @submit.prevent="sendPhoto">
-                            <div class="input-group">
-                                <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" required>
-                                <button type="submit" class="btn btn-primary">Change Photo</button>
-                            </div>
-                        </form>
-                    </div> -->
-                </div>
+                </form>
             </div>
-        </div>
     </div>
 </template>
 

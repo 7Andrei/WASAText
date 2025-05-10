@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -10,26 +11,77 @@ import (
 )
 
 func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
 	var message Message
+	var newPhoto []byte
+	var checkPhoto = true
+	var checkContent = true
+	newPhoto = nil
 
 	if !Authorized(r, rt) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&message)
+	newPhotoMulti, fileHeader, err := r.FormFile("photo")
 	if err != nil {
-		fmt.Println("Error decoding message(sendMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		checkPhoto = false
+		// http.Error(w, "Photo not found", http.StatusBadRequest)
+		// return
+	}
+
+	if fileHeader != nil {
+
+		fileName := fileHeader.Filename
+		if !IsPhoto(fileName) {
+			checkPhoto = false
+			// http.Error(w, "File is not a photo", http.StatusBadRequest)
+			// return
+		}
+
+		newPhoto, err = io.ReadAll(newPhotoMulti)
+		if err != nil {
+			checkPhoto = false
+			// http.Error(w, "Error reading file", http.StatusBadRequest)
+			// return
+		}
+		message.Photo = newPhoto
+	} else {
+		checkPhoto = false
+		message.Photo = nil
+	}
+
+	authorization := r.Header.Get("Authorization")
+	message.Sender, err = strconv.Atoi(authorization)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, int(message.Forwarded))
+	message.Receiver, err = strconv.Atoi(ps.ByName("chat_id"))
 	if err != nil {
-		fmt.Println("Error sending message(sendMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error fetching receiver id", http.StatusBadRequest)
 		return
 	}
+
+	message.Content = r.FormValue("text")
+	if message.Content == "" {
+		checkContent = false
+		// http.Error(w, "Message content not found", http.StatusBadRequest)
+		// return
+	}
+
+	if checkPhoto || checkContent {
+		message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, int(message.Forwarded))
+		if err != nil {
+			http.Error(w, "Error sending message", http.StatusBadRequest)
+			return
+		}
+	} else {
+		http.Error(w, "Message content and photo not found", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
