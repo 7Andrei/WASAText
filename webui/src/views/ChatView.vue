@@ -7,6 +7,7 @@ export default {
             chat: {},
             message: "",
             messagePhoto: null,
+            users: [],
         }
     },
     methods: 
@@ -136,11 +137,20 @@ export default {
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
-            // console.log(this.chat)
-            return this.chat
+            // return this.chat
 
 
         } 
+        catch (error) 
+        {
+            console.log("Errore(placeholder)", error)
+        }
+        try 
+        {
+            let response = await this.$axios.get("/users", {headers:{Authorization: this.userId}})
+            this.users=response.data
+            console.log(this.users)
+        }
         catch (error) 
         {
             console.log("Errore(placeholder)", error)
@@ -160,7 +170,7 @@ export default {
         <div class="container mt-4 row">
             <div class="row border-bottom border-primary">
                 <h3 v-if="chat.chatType == 'private'">
-                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64" alt="User Photo" v-if ="chat.chatType=='private'">
+                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-if ="chat.chatType=='private'">
                     <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                     {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                 </h3>
@@ -174,6 +184,8 @@ export default {
                 <p v-else>Loading chat</p>
             </div>
         </div>
+        <!-- DAFARE: Risposta ai messaggi -->
+        <!-- DAFARE: Doppie spunte -->
         <div class="mt-4">
             <div class="row justify-content-start">
                 <div class="col-md-10">
@@ -183,9 +195,8 @@ export default {
                             <div class="card-body">
                                 <router-link :to="`/chats/${chatId}/messages/${message.id}`">
                                     <h5 class="card-title">{{ getUser(message.sender) }}</h5>
-                                    <!-- DAFARE: Fixare forward dei messaggi -->
-                                    <!-- DAFARE: Risposta ai messaggi -->
                                 </router-link>
+                                <p v-if="message.forwarded"> Forwarded from {{ users.find(user => user.userId == message.forwarded)?.userName || 'Unknown' }} </p>
                                 <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
                                 <p class="card-text">{{ message.text }}</p>
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
