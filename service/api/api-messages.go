@@ -26,8 +26,6 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 	newPhotoMulti, fileHeader, err := r.FormFile("photo")
 	if err != nil {
 		checkPhoto = false
-		// http.Error(w, "Photo not found", http.StatusBadRequest)
-		// return
 	}
 
 	if fileHeader != nil {
@@ -35,15 +33,11 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		fileName := fileHeader.Filename
 		if !IsPhoto(fileName) {
 			checkPhoto = false
-			// http.Error(w, "File is not a photo", http.StatusBadRequest)
-			// return
 		}
 
 		newPhoto, err = io.ReadAll(newPhotoMulti)
 		if err != nil {
 			checkPhoto = false
-			// http.Error(w, "Error reading file", http.StatusBadRequest)
-			// return
 		}
 		message.Photo = newPhoto
 	} else {
@@ -67,8 +61,6 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 	message.Content = r.FormValue("text")
 	if message.Content == "" {
 		checkContent = false
-		// http.Error(w, "Message content not found", http.StatusBadRequest)
-		// return
 	}
 
 	if checkPhoto || checkContent {
@@ -94,29 +86,25 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
-		fmt.Println("userId header not found")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "userId header not found", http.StatusBadRequest)
 		return
 	}
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		fmt.Println("Error converting string to int(forwardMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
 		return
 	}
 
 	tempInt, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
-		fmt.Println("Error converting string to int(forwardMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
 		return
 	}
 	message.Id = tempInt
 
 	tempInt, err = strconv.Atoi(ps.ByName("chat_id"))
 	if err != nil {
-		fmt.Println("Error converting string to int(forwardMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
 		return
 	}
 	message.Receiver = tempInt
@@ -124,8 +112,7 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	err = rt.db.ForwardMessage(message.Id, message.Receiver, message.Sender)
 	if err != nil {
-		fmt.Println("Error forwarding message(forwardMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error forwarding message", http.StatusBadRequest)
 		return
 	}
 }
@@ -139,29 +126,25 @@ func (rt *_router) deleteMessage(w http.ResponseWriter, r *http.Request, ps http
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
-		fmt.Println("userId header not found")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "userId header not found", http.StatusBadRequest)
 		return
 	}
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 	fmt.Println("userIdInt:", userIdInt)
 
 	tempInt, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
-		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.DeleteMessage(tempInt)
 	if err != nil {
-		fmt.Println("Error deleting message(deleteMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error deleting message", http.StatusBadRequest)
 		return
 	}
 }
@@ -176,35 +159,30 @@ func (rt *_router) addReaction(w http.ResponseWriter, r *http.Request, ps httpro
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
-		fmt.Println("userId header not found")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "userId header not found", http.StatusBadRequest)
 		return
 	}
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	err = json.NewDecoder(r.Body).Decode(&reaction)
 	if err != nil {
-		fmt.Println("Error decoding reaction(addReaction api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error decoding reaction", http.StatusBadRequest)
 		return
 	}
 
 	messageId, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
-		fmt.Println("Error converting string to int(addReaction api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.AddReaction(userIdInt, messageId, reaction.Emoji)
 	if err != nil {
-		fmt.Println("Error adding reaction(addReaction api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error adding reaction", http.StatusBadRequest)
 		return
 	}
 }
@@ -218,28 +196,24 @@ func (rt *_router) deleteReaction(w http.ResponseWriter, r *http.Request, ps htt
 
 	userId := r.Header.Get("Authorization")
 	if userId == "" {
-		fmt.Println("userId header not found")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "userId header not found", http.StatusBadRequest)
 		return
 	}
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		fmt.Println("Error converting string to int(deleteMessage api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	messageId, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
-		fmt.Println("Error converting string to int(deleteReaction api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.DeleteReaction(userIdInt, messageId)
 	if err != nil {
-		fmt.Println("Error deleting reaction(deleteReaction api-message.go)\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error deleting reaction", http.StatusBadRequest)
 		return
 	}
 }

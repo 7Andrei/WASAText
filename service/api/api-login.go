@@ -15,20 +15,18 @@ func (rt *_router) loginUser(w http.ResponseWriter, r *http.Request, ps httprout
 	err := json.NewDecoder(r.Body).Decode(&user)
 	// fmt.Println(user)
 	if err != nil {
-		fmt.Println("Error decoding user(api). ", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if user.Username == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
 
 	user.Id, err = rt.db.Login(user.Username)
 	if err != nil {
-		fmt.Println("Error loggin in. ", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error logging in", http.StatusBadRequest)
 		return
 	}
 

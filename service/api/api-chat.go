@@ -96,7 +96,6 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 
 	chat.Name = r.FormValue("chatName")
 	participants := r.FormValue("chatParticipants")
-	// fmt.Println("utenti ", participants)
 	err = json.Unmarshal([]byte(participants), &chat.Participants)
 	if err != nil {
 		http.Error(w, "Error decoding participants", http.StatusBadRequest)
