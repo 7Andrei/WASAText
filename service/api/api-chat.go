@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -101,7 +100,6 @@ func (rt *_router) createChat(w http.ResponseWriter, r *http.Request, ps httprou
 		http.Error(w, "Error decoding participants", http.StatusBadRequest)
 		return
 	}
-	fmt.Println(chat.Participants)
 
 	if !(chat.ChatType == "private" || chat.ChatType == "group") {
 		http.Error(w, "Chat type can only be private or group", http.StatusBadRequest)

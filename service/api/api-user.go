@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -22,8 +21,7 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var tempId = ps.ByName("user_id")
 	user_id, err := strconv.Atoi(tempId)
 	if err != nil {
-		fmt.Println("Error converting user id. getUser api-user.go", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error converting user id", http.StatusBadRequest)
 		return
 	}
 	user.Id = user_id
@@ -32,8 +30,7 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	user = apiUser(tmpUser)
 
 	if erro != nil {
-		fmt.Println("Error fetching user. getUser api-user.go", erro)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error fetching user", http.StatusBadRequest)
 		return
 	}
 	_, _ = w.Write([]byte("User found"))
@@ -41,8 +38,7 @@ func (rt *_router) getUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	w.Header().Set("Content-Type", "application/json")
 	userJSON, err := json.Marshal(user)
 	if err != nil {
-		fmt.Println("Error marshalling user. getUser api-user.go", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Error marshalling user", http.StatusInternalServerError)
 		return
 	}
 	_, _ = w.Write(userJSON)
@@ -60,36 +56,31 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 	authentication := r.Header.Get("Authorization")
 	headerId, err := strconv.Atoi(authentication)
 	if err != nil {
-		fmt.Println("Error during conversion to int setUsername api-user.go")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error during conversion to int", http.StatusBadRequest)
 		return
 	}
 	DBuser, available, err := rt.db.GetUser(headerId)
 
 	if err != nil || !available {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
-		fmt.Println("Unauthorized. ", err)
 		return
 	}
 	user = apiUser(DBuser)
 
 	err = json.NewDecoder(r.Body).Decode(&user)
-	// fmt.Println(user)
 	if err != nil {
-		fmt.Println("Error decoding username. setUsername api-user.go ", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error decoding username", http.StatusBadRequest)
 		return
 	}
 
 	if user.Username == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.SetUsername(user.Id, user.Username)
 	if err != nil {
-		fmt.Println("Error updating username. setUsername api-user.go", err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Error updating username", http.StatusBadRequest)
 		return
 	}
 

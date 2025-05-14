@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -13,7 +12,6 @@ func (rt *_router) loginUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var user User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
-	// fmt.Println(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -30,7 +28,6 @@ func (rt *_router) loginUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	fmt.Println(user)
 	JSON, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

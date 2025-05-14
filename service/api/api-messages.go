@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -129,12 +128,12 @@ func (rt *_router) deleteMessage(w http.ResponseWriter, r *http.Request, ps http
 		http.Error(w, "userId header not found", http.StatusBadRequest)
 		return
 	}
-	userIdInt, err := strconv.Atoi(userId)
+	// userIdInt, err := strconv.Atoi(userId)
+	_, err := strconv.Atoi(userId)
 	if err != nil {
 		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("userIdInt:", userIdInt)
 
 	tempInt, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
