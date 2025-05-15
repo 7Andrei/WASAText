@@ -128,6 +128,11 @@ export default {
                 console.log("Errore(placeholder)", error)
             }
        },
+        forwardMessage(chatId, messageId)
+       {
+            console.log("Forwarding message", messageId)
+            this.$router.push(`/chats/${chatId}/messages/${messageId}`)
+       },
     },
     async mounted()
     {
@@ -193,9 +198,17 @@ export default {
                     <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
                         <div class="card" style="max-width: 50%;">
                             <div class="card-body">
-                                <router-link :to="`/chats/${chatId}/messages/${message.id}`">
-                                    <h5 class="card-title">{{ getUser(message.sender) }}</h5>
-                                </router-link>
+                                <div class="row">
+                                    <!-- <router-link :to="`/chats/${chatId}/messages/${message.id}`"> -->
+                                    <div  class="col-7">    
+                                        <h5 class="card-title">{{ getUser(message.sender) }}</h5>
+                                    </div>
+                                    <div class="col-5">
+                                        <button @click="forwardMessage(chatId, message.id)" class="btn btn-link">
+                                            ->
+                                        </button>
+                                    </div>
+                                </div>
                                 <p v-if="message.forwarded"> Forwarded from {{ users.find(user => user.userId == message.forwarded)?.userName || 'Unknown' }} </p>
                                 <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
                                 <p class="card-text">{{ message.text }}</p>

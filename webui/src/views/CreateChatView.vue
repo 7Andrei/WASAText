@@ -6,9 +6,10 @@ export default {
             chatName: "",
             chatType: "",
             chatPhoto: null,
-            chatParticipants: {},
+            chatParticipants: [],
             users: {},
-            error: null
+            error: null,
+            chatId: null,
         }
     },
     methods: 
@@ -26,8 +27,8 @@ export default {
             try 
             {
                 let response = await this.$axios.post('/createchat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
-                // console.log(response.data)
-                // this.$router.push("/chats")
+                this.chatId = response.data
+                this.$router.push(`/chats/${this.chatId}`)
             } 
             catch (error) 
             {
@@ -35,7 +36,6 @@ export default {
                 console.log(this.chatParticipants)
                 console.log(this.chatName)
                 console.log(this.chatType)
-                console.log(this.chatPhoto)
                 this.error = error.response.data
             }
         },
@@ -51,20 +51,14 @@ export default {
         {
             let response = await this.$axios.get(`/users`, {headers:{Authorization: this.userId}})
             this.users=response.data
-            console.log("Prima", this.users)
             this.users = this.users.filter(user => user.userId !== parseInt(this.userId));
-            console.log("Dopo", this.users)
         } 
         catch (error) 
         {
             console.log("Errore(placeholder)", error)
             this.error = error
         }
-
-        // this.users = this.users.filter(user => user.id !== this.userId)
-        // console.log(this.users)
     }
-    
 }
 </script>
 <template>
@@ -92,24 +86,14 @@ export default {
                         <label for="chatPhoto" class="form-label">Chat Photo</label>
                         <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
                     </div>
-                    <!-- <div class="mb-3 col-2">
-                        <label for="chatType" class="form-label">Chat Type</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="group" value="group" required v-model="chatType">
-                            <label class="form-check-label" for="group">Group</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="private" value="private" required v-model="chatType">
-                            <label class="form-check-label" for="private">Private</label>
-                        </div>
-                    </div> -->
                 </div>
                 <div class="row">
                     <div class="mb-3 col-10">
-                        <label for="chatParticipants" class="form-label">Select Participants</label>
-                        <select multiple class="form-control" id="chatParticipants" v-model="chatParticipants">
-                            <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
-                        </select>
+                        <label class="form-label">Select Participants</label>
+                        <div v-for="user in users" :key="user.userId">
+                            <input class="form-check-input"  :value=user type="checkbox" :id="user.userId" v-model="chatParticipants">
+                            <label class="ms-2" :for="user.userId"> {{user.userName}} </label>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Create Chat</button>

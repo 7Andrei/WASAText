@@ -22,6 +22,10 @@ export default {
 	},
 	mounted() {
 		this.login();
+
+		if (this.userId) {
+			this.$router.push('/chats');
+		} 
 	}
 }
 </script>
