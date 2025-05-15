@@ -214,7 +214,7 @@ export default {
                                     </div>
                                     <div class="col-2 text-end">
                                         <img :src="`data:image/jpeg;base64,${chat.chatPhoto}`" height="64" width="64" alt="Chat Photo" v-if="chat.chatPhoto && chat.chatType=='group'">
-                                        <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-else-if ="chat.chatType=='private'">
+                                        <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-else-if ="chat.chatType=='private' && chat.chatParticipants.find(user => user.userId != userId)?.userPhoto">
                                         <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                                     </div>
                                     <div class="row">
@@ -225,6 +225,10 @@ export default {
                                             <span class="mt-2">
                                                 {{ chat.chatMessages[chat.chatMessages.length - 1].text }}
                                             </span>
+                                            <svg v-if="chat.chatMessages[chat.chatMessages.length-1].photo" class="feather">
+                                                <use href="/feather-sprite-v4.29.0.svg#image"/>
+                                            </svg>
+                                            Image
                                             <span class="badge bg-secondary float-end mt-2">
                                                 {{ chat.chatMessages[chat.chatMessages.length - 1].dateTime }}
                                             </span>

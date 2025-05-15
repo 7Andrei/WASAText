@@ -175,7 +175,7 @@ export default {
         <div class="container mt-4 row">
             <div class="row border-bottom border-primary">
                 <h3 v-if="chat.chatType == 'private'">
-                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-if ="chat.chatType=='private'">
+                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-if ="chat.chatType=='private' && chat.chatParticipants.find(user => user.userId != userId)?.userPhoto">
                     <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                     {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                 </h3>
@@ -205,7 +205,7 @@ export default {
                                     </div>
                                     <div class="col-5">
                                         <button @click="forwardMessage(chatId, message.id)" class="btn btn-link">
-                                            ->
+                                            <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#arrow-right"/></svg>
                                         </button>
                                     </div>
                                 </div>
