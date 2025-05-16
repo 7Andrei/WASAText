@@ -56,7 +56,7 @@ type AppDatabase interface {
 	SetChatPhoto(chatId int, newPhoto []byte) error
 	LeaveChat(chatId int, userId int) error
 
-	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error)
+	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int, messageReply int) (int, error)
 	ForwardMessage(messageId int, messageReceiver int, messageForwarded int) error
 	DeleteMessage(messageId int) error
 	AddReaction(userId int, messageId int, reaction string) error
@@ -95,9 +95,11 @@ func New(db *sql.DB) (AppDatabase, error) {
 						 sender INT NOT NULL,
 						 receiver INT NOT NULL,
 						 forwarded INT,
+						 reply INT,
 						 sentTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						 FOREIGN KEY(sender) references users(id),
 						 FOREIGN KEY(receiver) references chats(id),
+						 FOREIGN KEY(reply) references messages(id),
 						 FOREIGN KEY(forwarded) references users(id));`
 		_, err = db.Exec(messagesStmt)
 		if err != nil {

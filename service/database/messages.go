@@ -1,8 +1,8 @@
 package database
 
-func (db *appdbimpl) SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int) (int, error) {
+func (db *appdbimpl) SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int, messageReply int) (int, error) {
 	var messageId int
-	err := db.c.QueryRow("INSERT INTO messages (content, photo, sender, receiver, forwarded) VALUES (?, ?, ?, ?, ?) RETURNING id", messageContent, messagePhoto, messageSender, messageReceiver, messageForwarded).Scan(&messageId)
+	err := db.c.QueryRow("INSERT INTO messages (content, photo, sender, receiver, forwarded, reply) VALUES (?, ?, ?, ?, ?, ?) RETURNING id", messageContent, messagePhoto, messageSender, messageReceiver, messageForwarded, messageReply).Scan(&messageId)
 	if err != nil {
 		return messageId, err
 	}
@@ -12,14 +12,14 @@ func (db *appdbimpl) SendMessage(messageContent string, messagePhoto []byte, mes
 
 func (db *appdbimpl) ForwardMessage(messageId int, messageReceiver int, messageForwarded int) error {
 	var oldMessage Message
-	err := db.c.QueryRow("SELECT * FROM messages WHERE id = ?", messageId).Scan(&oldMessage.Id, &oldMessage.Content, &oldMessage.Photo, &oldMessage.Sender, &oldMessage.Receiver, &oldMessage.Forwarded, &oldMessage.TimeStamp)
+	err := db.c.QueryRow("SELECT * FROM messages WHERE id = ?", messageId).Scan(&oldMessage.Id, &oldMessage.Content, &oldMessage.Photo, &oldMessage.Sender, &oldMessage.Receiver, &oldMessage.Forwarded, &oldMessage.Reply, &oldMessage.TimeStamp)
 	if err != nil {
 		return err
 	}
 	oldMessage.Receiver = messageReceiver
 	oldMessage.Forwarded = oldMessage.Sender
 	oldMessage.Sender = messageForwarded
-	_, err = db.c.Exec("INSERT INTO messages (content, photo, sender, receiver, forwarded) VALUES (?, ?, ?, ?, ?)", oldMessage.Content, oldMessage.Photo, oldMessage.Sender, oldMessage.Receiver, oldMessage.Forwarded)
+	_, err = db.c.Exec("INSERT INTO messages (content, photo, sender, receiver, forwarded, reply) VALUES (?, ?, ?, ?, ?, 0)", oldMessage.Content, oldMessage.Photo, oldMessage.Sender, oldMessage.Receiver, oldMessage.Forwarded)
 	if err != nil {
 		return err
 	}

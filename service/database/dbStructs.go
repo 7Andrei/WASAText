@@ -19,6 +19,7 @@ type Message struct {
 	Forwarded int        `json:"forwarded"`
 	TimeStamp time.Time  `json:"timestamp"`
 	Reactions []Reaction `json:"reactions"`
+	Reply     int        `json:"reply"`
 }
 
 type Chat struct {

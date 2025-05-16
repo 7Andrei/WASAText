@@ -228,7 +228,6 @@ export default {
                                             <svg v-if="chat.chatMessages[chat.chatMessages.length-1].photo" class="feather">
                                                 <use href="/feather-sprite-v4.29.0.svg#image"/>
                                             </svg>
-                                            Image
                                             <span class="badge bg-secondary float-end mt-2">
                                                 {{ chat.chatMessages[chat.chatMessages.length - 1].dateTime }}
                                             </span>

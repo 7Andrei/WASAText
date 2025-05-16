@@ -58,6 +58,7 @@ type Message struct {
 	Forwarded int        `json:"forwarded"`
 	TimeStamp time.Time  `json:"dateTime"`
 	Reactions []Reaction `json:"reactions"`
+	Reply     int        `json:"reply"`
 }
 
 func apiMessage(message database.Message) Message {
@@ -79,6 +80,7 @@ func apiMessage(message database.Message) Message {
 		Forwarded: message.Forwarded,
 		TimeStamp: message.TimeStamp,
 		Reactions: reactions,
+		Reply:     message.Reply,
 	}
 }
 

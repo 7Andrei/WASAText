@@ -33,7 +33,7 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 		return chat, err
 	}
 
-	rows, err = db.c.Query("SELECT id, content, sender, receiver, COALESCE(forwarded, 0) AS forwarded, sentTime, photo FROM messages WHERE receiver=?", chatId)
+	rows, err = db.c.Query("SELECT id, content, sender, receiver, COALESCE(forwarded, 0) AS forwarded, sentTime, photo, reply FROM messages WHERE receiver=?", chatId)
 	if err != nil {
 		return chat, err
 	}
@@ -41,7 +41,7 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 
 	for rows.Next() {
 		var message Message
-		err := rows.Scan(&message.Id, &message.Content, &message.Sender, &message.Receiver, &message.Forwarded, &message.TimeStamp, &message.Photo)
+		err := rows.Scan(&message.Id, &message.Content, &message.Sender, &message.Receiver, &message.Forwarded, &message.TimeStamp, &message.Photo, &message.Reply)
 		if err != nil {
 			return chat, err
 		}

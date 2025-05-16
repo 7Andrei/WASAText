@@ -62,8 +62,14 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		checkContent = false
 	}
 
+	message.Reply, err = strconv.Atoi(r.FormValue("reply"))
+	if err != nil {
+		http.Error(w, "Error fetching reply id", http.StatusBadRequest)
+		return
+	}
+
 	if checkPhoto || checkContent {
-		message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, int(message.Forwarded))
+		message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, int(message.Forwarded), message.Reply)
 		if err != nil {
 			http.Error(w, "Error sending message", http.StatusBadRequest)
 			return
@@ -90,20 +96,20 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 
 	tempInt, err := strconv.Atoi(ps.ByName("message_id"))
 	if err != nil {
-		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 	message.Id = tempInt
 
 	tempInt, err = strconv.Atoi(ps.ByName("chat_id"))
 	if err != nil {
-		http.Error(w, "Error converting string to int(forwardMessage api-message.go)", http.StatusBadRequest)
+		http.Error(w, "Error converting string to int", http.StatusBadRequest)
 		return
 	}
 	message.Receiver = tempInt

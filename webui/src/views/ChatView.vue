@@ -8,6 +8,8 @@ export default {
             message: "",
             messagePhoto: null,
             users: [],
+            reply: 0,
+            replyMessage: null,
         }
     },
     methods: 
@@ -17,6 +19,8 @@ export default {
             event.preventDefault()
             if((this.messagePhoto==null) && (this.message==""))
             {
+                this.replyMessage = null
+                this.reply = 0
                 alert("Please insert a message or a photo")
                 return
             }
@@ -26,6 +30,7 @@ export default {
             messagePhotoForm.append('text', this.message)
             messagePhotoForm.append('sender', parseInt(this.userId))
             messagePhotoForm.append('receiver', parseInt(this.chatId))
+            messagePhotoForm.append('reply', this.reply)
 
             try 
             {
@@ -38,6 +43,8 @@ export default {
             {
                 console.log("Errore(placeholder)", error)
             }
+            this.replyMessage = null
+            this.reply = 0
         },
         handleFileUpload(event)
        {
@@ -127,12 +134,26 @@ export default {
             {
                 console.log("Errore(placeholder)", error)
             }
-       },
+        },
         forwardMessage(chatId, messageId)
        {
             console.log("Forwarding message", messageId)
             this.$router.push(`/chats/${chatId}/messages/${messageId}`)
-       },
+        },
+
+        // REPLY
+        setReply(message)
+        {
+            this.reply = message.id
+            this.replyMessage = message.text
+            console.log("Replying to message", message.id)
+        },
+        clearReply()
+        {
+            this.reply = 0
+            this.replyMessage = null
+        }
+        // REPLY
     },
     async mounted()
     {
@@ -196,7 +217,7 @@ export default {
                 <div class="col-md-10">
                     <!-- DAFARE: Fare card dei messaggi piu' carina -->
                     <div v-for="message in chat.chatMessages" :key="message.id" :class="['d-flex mb-2', isSender(message.sender) ? 'justify-content-end' : 'justify-content-start']">
-                        <div class="card" style="max-width: 50%;">
+                        <div class="card" style="max-width: 75%;">
                             <div class="card-body">
                                 <div class="row">
                                     <!-- <router-link :to="`/chats/${chatId}/messages/${message.id}`"> -->
@@ -207,10 +228,16 @@ export default {
                                         <button @click="forwardMessage(chatId, message.id)" class="btn btn-link">
                                             <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#arrow-right"/></svg>
                                         </button>
+                                        <!-- REPLY -->
+                                        <button @click="setReply(message)" class="btn btn-link">
+                                            <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#arrow-left"/></svg>
+                                        </button>
+                                        <!-- REPLY -->
                                     </div>
                                 </div>
                                 <p v-if="message.forwarded"> Forwarded from {{ users.find(user => user.userId == message.forwarded)?.userName || 'Unknown' }} </p>
                                 <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
+                                <p v-if="message.reply" class="text-muted">Replying to: {{ chat.chatMessages.find(msg => msg.id === message.reply)?.text || 'Message not found' }} </p>
                                 <p class="card-text">{{ message.text }}</p>
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
                                 <div class="d-flex flex-column align-items-end mt-2">
@@ -234,7 +261,7 @@ export default {
                                     </div>
                                     <div class="d-flex flex-wrap mt-2">
                                         <button v-for="reaction in message.reactions" :key="reaction.id" @click="deleteReaction(message.id, reaction.id)" class="btn btn-sm btn-outline-secondary me-1">
-                                            {{ reaction.reaction }}
+                                            {{ reaction.reaction }} <small>{{ getUser(reaction.userId) }}</small>
                                         </button>
                                     </div>
                                 </div>
@@ -247,6 +274,16 @@ export default {
         </div>
 
             <div class="message-form-container">
+                <div class="row" v-if="reply">
+                    <div class="alert alert-info text-truncate col-6">
+                        Replying to: {{ replyMessage }}
+                    </div>
+                    <div class="col-6">
+                        <button @click="clearReply" class="btn btn-link align-text-center"> 
+                            <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#x"/></svg>    
+                        </button>
+                    </div>
+                </div>
                 <form @submit.prevent="sendMessage">
                     <div class="row">
                         <div class="col-6">

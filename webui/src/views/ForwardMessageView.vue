@@ -21,7 +21,7 @@ export default {
     {
         this.userId = sessionStorage.getItem("userId")
         this.messageId = this.$route.params.messageId
-        console.log(this.userId)
+        // console.log(this.userId)
         try 
         {
             let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
