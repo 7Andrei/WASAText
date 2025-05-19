@@ -140,8 +140,6 @@ export default {
             console.log("Forwarding message", messageId)
             this.$router.push(`/chats/${chatId}/messages/${messageId}`)
         },
-
-        // REPLY
         setReply(message)
         {
             this.reply = message.id
@@ -153,7 +151,6 @@ export default {
             this.reply = 0
             this.replyMessage = null
         }
-        // REPLY
     },
     async mounted()
     {
@@ -163,6 +160,7 @@ export default {
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
+            console.log(this.chat)
             // return this.chat
 
 
@@ -223,19 +221,25 @@ export default {
                         <div class="card" style="max-width: 75%;">
                             <div class="card-body">
                                 <div class="row">
-                                    <!-- <router-link :to="`/chats/${chatId}/messages/${message.id}`"> -->
                                     <div  class="col-7">    
-                                        <h5 class="card-title">{{ getUser(message.sender) }}</h5>
+                                        <h5 class="card-title">
+                                            {{ getUser(message.sender) }}
+                                            <img
+                                                v-if="chat.chatParticipants.find(user => user.userId === message.sender)?.userPhoto"
+                                                :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId == message.sender)?.userPhoto}`"
+                                                height="32"
+                                                width="32"
+                                            >
+                                            <img v-else src="https://placehold.co/32x32?text=User" height="32" width="32">
+                                        </h5>
                                     </div>
                                     <div class="col-5">
                                         <button @click="forwardMessage(chatId, message.id)" class="btn btn-link">
                                             <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#arrow-right"/></svg>
                                         </button>
-                                        <!-- REPLY -->
                                         <button @click="setReply(message)" class="btn btn-link">
                                             <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#arrow-left"/></svg>
                                         </button>
-                                        <!-- REPLY -->
                                     </div>
                                 </div>
                                 <p v-if="message.forwarded"> Forwarded from {{ users.find(user => user.userId == message.forwarded)?.userName || 'Unknown' }} </p>

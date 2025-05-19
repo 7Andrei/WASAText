@@ -58,21 +58,33 @@ export default {
             let chatId = await this.createChat(privateUserId)
             this.$router.push(`/chats/${chatId}`)
         },
+        async refreshChats()
+        {
+            try 
+            {
+                let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
+                this.chats=response.data
+            } 
+            catch (error) 
+            {
+                console.log("Errore(DaCambiare)", error)
+            }
+        },
     },
     async mounted()
     {
         this.userId = sessionStorage.getItem("userId")
         console.log(this.userId)
-        try 
-        {
-            let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
-            this.chats=response.data
-            // console.log(this.chats)
-        } 
-        catch (error) 
-        {
-            console.log("Errore(DaCambiare)", error)
-        }
+        // try 
+        // {
+        //     let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
+        //     this.chats=response.data
+        //     // console.log(this.chats)
+        // } 
+        // catch (error) 
+        // {
+        //     console.log("Errore(DaCambiare)", error)
+        // }
         
 
         try 
@@ -104,7 +116,7 @@ export default {
         {
             let response = await this.$axios.get("/users", {headers:{Authorization: this.userId}})
             this.users=response.data
-            this.users.splice(this.users.indexOf(this.userId), 1)
+            this.users = this.users.filter(user => user.userId != this.userId)
         }
         catch (error) 
         {
@@ -121,7 +133,7 @@ export default {
                 this.groupChats.push(chat)
             }
         }
-        this.refreshInterval = setInterval(() => {this.refreshMessages()}, 2000);
+        this.refreshInterval = setInterval(() => {this.refreshChats()}, 2000);
 
     },
     unmounted() {
@@ -129,15 +141,19 @@ export default {
     },
     watch: {
         searchUser: function(){
-            if(this.searchUser.length>3)
+            if(this.searchUser.length>2)
             {
                 this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
-                return this.foundUsers
+                console.log(this.foundUsers)
+                // return this.foundUsers
+            }
+            else if(this.searchUser == "/")
+            {
+                this.foundUsers = this.users
             }
             else
             {
-                this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
-                return this.users
+                this.foundUsers = []
             }
         }
     }
@@ -165,7 +181,7 @@ export default {
                                 id="privateChat"   
                                 placeholder="Search user" 
                                 v-model="searchUser" >
-                            <label for="floatingInputGroup1">Username</label>
+                            <label for="floatingInputGroup1">Username or "/" for all users</label>
                         </div>
                     </div>
                 </div>
