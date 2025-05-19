@@ -78,6 +78,16 @@ func (rt *_router) setUsername(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	available, err = rt.db.CheckUserName(user.Username)
+	if err != nil {
+		http.Error(w, "Username already exists", http.StatusBadRequest)
+		return
+	}
+	if available {
+		http.Error(w, "Username already exists", http.StatusForbidden)
+		return
+	}
+
 	err = rt.db.SetUsername(user.Id, user.Username)
 	if err != nil {
 		http.Error(w, "Error updating username", http.StatusBadRequest)

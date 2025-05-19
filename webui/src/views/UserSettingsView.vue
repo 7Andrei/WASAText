@@ -35,7 +35,14 @@ export default {
             }
             catch (error)
             {
-                console.log("Errore(placeholder)", error)
+                if (error.response.status == 403)
+                {
+                    alert("UserName already taken")
+                }
+                else
+                {
+                    console.log("Errore(placeholder)", error)
+                }
             }
        },
        handleFileUpload(event)

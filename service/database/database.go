@@ -47,6 +47,7 @@ type AppDatabase interface {
 	GetUser(userId int) (User, bool, error)
 	SetUserPhoto(userId int, newPhoto []byte) error
 	GetAllUsers() ([]User, error)
+	CheckUserName(userName string) (bool, error)
 
 	GetChat(chatId int) (Chat, error)
 	CreateChat(chatName string, chatPhoto []byte, chatType string) (int, error)

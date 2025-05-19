@@ -67,3 +67,15 @@ func (db *appdbimpl) GetAllUsers() ([]User, error) {
 	}
 	return users, nil
 }
+
+func (db *appdbimpl) CheckUserName(userName string) (bool, error) {
+	var userId int = 0
+	err := db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
+	if err != nil {
+		return false, err
+	}
+	if userId == 0 {
+		return false, nil
+	}
+	return true, nil
+}
