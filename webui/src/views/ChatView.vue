@@ -119,7 +119,7 @@ export default {
             }
         },
         async sendPhoto(event)
-       {
+        {
         try 
             {
                 let messagePhotoForm = new FormData()
@@ -181,7 +181,11 @@ export default {
         {
             console.log("Errore(placeholder)", error)
         }
-    }
+        this.refreshInterval = setInterval(() => {this.refreshMessages()}, 2000);
+    },
+    unmounted() {
+        clearInterval(this.refreshInterval);
+    },
 }
 </script>
 <template>
@@ -210,7 +214,6 @@ export default {
                 <p v-else>Loading chat</p>
             </div>
         </div>
-        <!-- DAFARE: Risposta ai messaggi -->
         <!-- DAFARE: Doppie spunte -->
         <div class="mt-4">
             <div class="row justify-content-start">

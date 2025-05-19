@@ -121,9 +121,11 @@ export default {
                 this.groupChats.push(chat)
             }
         }
-        console.log(this.privateChats)
-        // console.log(this.groupChats)
+        this.refreshInterval = setInterval(() => {this.refreshMessages()}, 2000);
 
+    },
+    unmounted() {
+        clearInterval(this.refreshInterval);
     },
     watch: {
         searchUser: function(){

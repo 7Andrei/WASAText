@@ -40,12 +40,14 @@ export default {
        },
        handleFileUpload(event)
        {
-           this.userPhoto = event.target.files[0]
+            this.userPhoto = event.target.files[0]
        },
        logout()
        {
-           sessionStorage.removeItem("userId")
-           this.$router.push("/login")
+            this.userId = null
+            sessionStorage.removeItem("userId")
+            this.$emit("Logout")
+            this.$router.push("/login")
        }
     },
     async mounted()
