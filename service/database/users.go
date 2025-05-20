@@ -69,7 +69,7 @@ func (db *appdbimpl) GetAllUsers() ([]User, error) {
 }
 
 func (db *appdbimpl) CheckUserName(userName string) (bool, error) {
-	var userId int = 0
+	var userId = 0
 	err := db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
 	if err != nil {
 		return false, err
