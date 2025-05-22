@@ -10,7 +10,7 @@ export default {
             chatParticipants: {},
             users: {},
             user: {},
-            usersToAdd: {},
+            usersToAdd: [],
         }
     },
     methods: 
@@ -112,43 +112,59 @@ export default {
     </div>
     <div v-else>
         <div class="row">
-            <h2>Chat Settings</h2>
+            <h2 class="mt-4">Chat Settings</h2>
             <div class="row">
                 <div class="col-6">
-                    <form @submit.prevent="changePhoto" class="mt-4">
-                        <div class="mb-3">
-                            <label for="chatPhoto" class="form-label">Change Photo</label>
-                            <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" required>
+                    <div class="row">
+                        <div class="col-6">
+                            <form @submit.prevent="changePhoto" class="mt-4">
+                                <div class="mb-3">
+                                    <label for="chatPhoto" class="form-label">Change Photo</label>
+                                    <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change Photo</button>
+                            </form>
                         </div>
-                        <button type="submit" class="btn btn-primary">Change Photo</button>
-                    </form>
-                </div>
-                <div class="col-6">
-                    <form @submit.prevent="changeName" class="mt-4">
-                        <div class="mb-3">
-                            <label for="chatName" class="form-label">Change Name</label>
-                            <input type="text" class="form-control" id="chatName" v-model="chatName" required>
+                        <div class="col-6">
+                            <form @submit.prevent="changeName" class="mt-4">
+                                <div class="mb-3">
+                                    <label for="chatName" class="form-label">Change Name</label>
+                                    <input type="text" class="form-control" id="chatName" v-model="chatName" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change Name</button>
+                            </form>
                         </div>
-                        <button type="submit" class="btn btn-primary">Change Name</button>
-                    </form>
-                </div>
-                <div class="col-6">
-                    <label for="chatParticipants" class="form-label">Select Participants</label>
-                    <form @submit.prevent="addUser">
-                        <select multiple class="form-control mt-4 mb-3" id="chatParticipants" v-model="usersToAdd">
-                            <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary">Add Users</button>
-                    </form>
-                </div>
-                <div class="col-6">
-                    <!-- <button @click="logout" class="btn btn-danger mt-4">Logout</button> -->
+                        <!-- DAFARE Ricerca -->
+                        <!-- <label for="chatParticipants" class="form-label">Select Participants</label>
+                        <form @submit.prevent="addUser">
+                            <select multiple class="form-control mt-4 mb-3" id="chatParticipants" v-model="usersToAdd">
+                                <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Add Users</button>
+                        </form> -->
+
+                        <form @submit.prevent="addUser">
+                            <label class="form-label mt-4">Select Participants</label>
+                            <div v-for="user in users" :key="user.userId">
+                                <input class="form-check-input"  :value=user type="checkbox" :id="user.userId" v-model="usersToAdd">
+                                <label class="ms-2" :for="user.userId"> {{user.userName}} </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Add Users</button>
+                        </form>
+
+                        <!--  -->
+                    </div>
                     <button @click = "leaveChat" class="btn btn-danger mt-5">Leave Chat</button>
                 </div>
+                <div class="col-6">
+                    <h5>Chat Participants</h5>
+                    <div v-for="participant in chatParticipants" :key="participant.userId" class="mb-3">
+                        <img :src="`data:image/jpeg;base64,${participant.userPhoto}`" height="64" width="64" alt="User Photo" v-if="participant.userPhoto">
+                        <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" v-else>
+                        <span class="ms-2">{{ participant.userName }}</span>
+                    </div>
+                </div>
             </div>
-            <!-- <div class="col-4">
-                <button @click="logout" class="btn btn-danger mt-4">Logout</button>
-            </div> -->
         </div>
     </div>
 </template>

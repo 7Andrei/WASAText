@@ -195,8 +195,8 @@ export default {
         <button @click="$router.push('/login')" class="btn btn-primary">Login</button>
     </div>
     <div v-else>
-        <div class="container mt-4 row">
-            <div class="row border-bottom border-primary">
+        <div class="row border-bottom border-primary mt-4">
+            <div class="col-8">
                 <h3 v-if="chat.chatType == 'private'">
                     <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-if ="chat.chatType=='private' && chat.chatParticipants.find(user => user.userId != userId)?.userPhoto">
                     <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
@@ -209,7 +209,12 @@ export default {
                         {{ chat.chatName }}
                     </router-link>
                 </h3>
-                <p v-else>Loading chat</p>
+                <h3 v-else>Loading chat</h3>
+            </div>
+            <div class="col-4 mt-4 text-end">
+                <span v-for="participant in chat.chatParticipants" :key="participant.userId" class="badge bg-secondary me-2">
+                    {{ participant.userName }}
+                </span>
             </div>
         </div>
         <!-- DAFARE: Doppie spunte -->
