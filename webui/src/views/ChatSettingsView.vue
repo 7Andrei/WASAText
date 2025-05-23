@@ -11,6 +11,8 @@ export default {
             users: {},
             user: {},
             usersToAdd: [],
+            foundUsers: [],
+            searchUser: "",
         }
     },
     methods: 
@@ -23,6 +25,7 @@ export default {
                 chatPhotoForm.append('chatPhoto', this.chatPhoto)
                 let response = await this.$axios.put(`/chats/${this.chatId}/settings/changephoto`, chatPhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 alert("Photo changed")
+                this.$router.push(`/chats/${this.chatId}`)
             } 
             catch (error) 
             {
@@ -36,6 +39,7 @@ export default {
             {
                 let response = await this.$axios.put(`/chats/${this.chatId}/settings/changename`, {chatName: this.chatName}, {headers:{Authorization: this.userId}})
                 alert("Name changed")
+                this.$router.push(`/chats/${this.chatId}`)
             }
             catch (error)
             {
@@ -53,6 +57,7 @@ export default {
            {
                let response = await this.$axios.post(`/chats/${this.chatId}/settings/add`, {chatParticipants: this.usersToAdd}, {headers:{Authorization: this.userId}})
                alert("User added")
+                this.$router.push(`/chats/${this.chatId}`)
            } 
            catch (error) 
            {
@@ -98,6 +103,20 @@ export default {
             console.log("Errore(placeholder)", error)
         }
         this.users = this.users.filter(user => !this.chatParticipants.some(participant => participant.userId === user.userId))
+        this.foundUsers = this.users
+    },
+    watch: {
+        searchUser: function(){
+            if(this.searchUser.length>2)
+            {
+                this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
+                // console.log(this.foundUsers)
+            }
+            else
+            {
+                this.foundUsers=this.users
+            }
+        }
     }
 }
 </script>
@@ -134,25 +153,15 @@ export default {
                                 <button type="submit" class="btn btn-primary">Change Name</button>
                             </form>
                         </div>
-                        <!-- DAFARE Ricerca -->
-                        <!-- <label for="chatParticipants" class="form-label">Select Participants</label>
+                        <input type="text" class="form-control mt-4" id="searchUser" placeholder="Search user" v-model="searchUser">
                         <form @submit.prevent="addUser">
-                            <select multiple class="form-control mt-4 mb-3" id="chatParticipants" v-model="usersToAdd">
-                                <option v-for="user in users" :key="user.userId" :value="user">{{ user.userName }}</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary">Add Users</button>
-                        </form> -->
-
-                        <form @submit.prevent="addUser">
-                            <label class="form-label mt-4">Select Participants</label>
-                            <div v-for="user in users" :key="user.userId">
+                            <label class="form-label mt-2">Select Participants</label>
+                            <div v-for="user in foundUsers" :key="user.userId">
                                 <input class="form-check-input"  :value=user type="checkbox" :id="user.userId" v-model="usersToAdd">
                                 <label class="ms-2" :for="user.userId"> {{user.userName}} </label>
                             </div>
                             <button type="submit" class="btn btn-primary mt-2">Add Users</button>
                         </form>
-
-                        <!--  -->
                     </div>
                     <button @click = "leaveChat" class="btn btn-danger mt-5">Leave Chat</button>
                 </div>

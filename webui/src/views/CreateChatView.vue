@@ -10,6 +10,8 @@ export default {
             users: {},
             error: null,
             chatId: null,
+            foundUsers: [],
+            searchUser: "",
         }
     },
     methods: 
@@ -58,6 +60,20 @@ export default {
             console.log("Errore(placeholder)", error)
             this.error = error
         }
+        this.foundUsers = this.users
+    },
+    watch: {
+        searchUser: function(){
+            if(this.searchUser.length>2)
+            {
+                this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
+                // console.log(this.foundUsers)
+            }
+            else
+            {
+                this.foundUsers=this.users
+            }
+        }
     }
 }
 </script>
@@ -89,8 +105,9 @@ export default {
                 </div>
                 <div class="row">
                     <div class="mb-3 col-10">
+                        <input type="text" class="form-control mt-2" id="searchUser" placeholder="Search user" v-model="searchUser">
                         <label class="form-label">Select Participants</label>
-                        <div v-for="user in users" :key="user.userId">
+                        <div v-for="user in foundUsers" :key="user.userId">
                             <input class="form-check-input"  :value=user type="checkbox" :id="user.userId" v-model="chatParticipants">
                             <label class="ms-2" :for="user.userId"> {{user.userName}} </label>
                         </div>
