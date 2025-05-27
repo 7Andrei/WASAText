@@ -62,35 +62,47 @@ export default {
         {
             try 
             {
-                let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
-                this.chats=response.data
+                let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId }})
+                this.chats = response.data;
+                if (this.chats==nil)
+                {
+                    this.chats = []
+                }
+
+                this.chats.sort((a, b) => {
+
+                    const lastMessageA = a.chatMessages[a.chatMessages.length - 1];
+                    const lastMessageB = b.chatMessages[b.chatMessages.length - 1];
+
+                    const timeA = lastMessageA ? new Date(lastMessageA.dateTime).getTime() : 0;
+                    const timeB = lastMessageB ? new Date(lastMessageB.dateTime).getTime() : 0;
+
+                    return timeB - timeA;
+                }
+                );
+
             } 
             catch (error) 
             {
-                console.log("Errore(DaCambiare)", error)
+                console.log("Errore(DaCambiare)", error);
             }
+
+
         },
     },
     async mounted()
     {
         this.userId = sessionStorage.getItem("userId")
         console.log(this.userId)
-        // try 
-        // {
-        //     let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId}})
-        //     this.chats=response.data
-        //     // console.log(this.chats)
-        // } 
-        // catch (error) 
-        // {
-        //     console.log("Errore(DaCambiare)", error)
-        // }
-        
 
         try 
         {
             let response = await this.$axios.get("/chats", { headers: { Authorization: this.userId } });
             this.chats = response.data;
+            if (this.chats==nil)
+            {
+                this.chats = []
+            }
 
             this.chats.sort((a, b) => {
 
