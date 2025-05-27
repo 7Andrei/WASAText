@@ -28,7 +28,7 @@ export default {
             chat.append('chatParticipants', JSON.stringify(participants))
             try 
             {
-                let response = await this.$axios.post('/createchat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
+                let response = await this.$axios.post('/chat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 console.log(response.data)
                 returnId = response.data
                 // this.$router.push("/chats")
@@ -192,7 +192,7 @@ export default {
                         No chats found
                     </div>
                     <div class="text-center">
-                        <button @click="$router.push('/createchat')" class="btn btn-primary">
+                        <button @click="$router.push('/chat')" class="btn btn-primary">
                             Create a new chat
                         </button>
                         <h2 class="mt-4">Or search Username above to create a private chat</h2>

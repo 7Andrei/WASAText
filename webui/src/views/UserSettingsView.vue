@@ -15,7 +15,7 @@ export default {
             {
                 let userPhotoForm = new FormData()
                 userPhotoForm.append('userPhoto', this.userPhoto)
-                let response = await this.$axios.put('/settings/changephoto', userPhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
+                let response = await this.$axios.put('/settings/photo', userPhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 alert("Photo changed")
                 // console.log(response.data)
             } 
@@ -29,7 +29,7 @@ export default {
             event.preventDefault()
             try
             {
-                let response = await this.$axios.put(`/settings/changename`, {userName: this.userName}, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.put(`/settings/name`, {userName: this.userName}, {headers:{Authorization: this.userId}})
                 alert("Name changed")
                 // console.log(response.data)
             }

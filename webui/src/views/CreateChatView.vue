@@ -28,7 +28,7 @@ export default {
             chat.append('chatParticipants', JSON.stringify(this.chatParticipants))
             try 
             {
-                let response = await this.$axios.post('/createchat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
+                let response = await this.$axios.post('/chat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 this.chatId = response.data
                 this.$router.push(`/chats/${this.chatId}`)
             } 

@@ -23,7 +23,7 @@ export default {
             {
                 let chatPhotoForm = new FormData()
                 chatPhotoForm.append('chatPhoto', this.chatPhoto)
-                let response = await this.$axios.put(`/chats/${this.chatId}/settings/changephoto`, chatPhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
+                let response = await this.$axios.put(`/chats/${this.chatId}/settings/photo`, chatPhotoForm, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
                 alert("Photo changed")
                 this.$router.push(`/chats/${this.chatId}`)
             } 
@@ -37,7 +37,7 @@ export default {
             event.preventDefault()
             try
             {
-                let response = await this.$axios.put(`/chats/${this.chatId}/settings/changename`, {chatName: this.chatName}, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.put(`/chats/${this.chatId}/settings/name`, {chatName: this.chatName}, {headers:{Authorization: this.userId}})
                 alert("Name changed")
                 this.$router.push(`/chats/${this.chatId}`)
             }
@@ -55,7 +55,7 @@ export default {
            event.preventDefault()
            try 
            {
-               let response = await this.$axios.post(`/chats/${this.chatId}/settings/add`, {chatParticipants: this.usersToAdd}, {headers:{Authorization: this.userId}})
+               let response = await this.$axios.post(`/chats/${this.chatId}/settings/users`, {chatParticipants: this.usersToAdd}, {headers:{Authorization: this.userId}})
                alert("User added")
                 this.$router.push(`/chats/${this.chatId}`)
            } 
@@ -68,7 +68,7 @@ export default {
        {
             try
             {
-                let response = await this.$axios.delete(`/chats/${this.chatId}/settings/leave`, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.delete(`/chats/${this.chatId}/settings`, {headers:{Authorization: this.userId}})
                 alert("Chat left")
                 this.$router.push("/chats")
             }

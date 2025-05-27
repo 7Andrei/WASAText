@@ -58,7 +58,7 @@ export default {
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink to="/createchat" class="nav-link">
+							<RouterLink to="/chat" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#plus-circle"/></svg>
 								New group chat
 							</RouterLink>

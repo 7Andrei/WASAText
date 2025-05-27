@@ -19,7 +19,7 @@ const router = createRouter({
 		{path: '/login', component: LoginView},
 		{path: '/chats', component: AllChatsView},
 		{path: '/chats/:chatId', component: ChatView},
-		{path: '/createchat', component: CreateChatView},
+		{path: '/chat', component: CreateChatView},
 		{path: '/settings', component: UserSettingsView},
 		{path: '/chats/:chatId/settings', component: ChatSettingsView},
 		{path: '/chats/:chatId/messages/:messageId', component: ForwardMessageView}

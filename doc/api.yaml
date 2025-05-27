@@ -60,7 +60,7 @@ paths:
                   maximum: 999
                   example: 12
                   
-  /settings/changename:
+  /settings/name:
     put:
       tags: ["User settings"]
       security:
@@ -103,7 +103,7 @@ paths:
                     maxLength: 999
                     example: "Unauthorized"
 
-  /settings/changephoto:
+  /settings/photo:
     put:
       tags: ["User settings"]
       security:
@@ -356,7 +356,70 @@ paths:
                     pattern: '^.*?$'
                     minLength: 1
                     maxLength: 999
-            
+    delete:
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      summary: Deletes a message
+      description: Deletes the selected message as long as it was sent by the user
+      operationId: deleteMessage
+      parameters:
+        - name: chatId
+          description: Chat id
+          in: path
+          required: true
+          schema:
+            description: Chat id
+            type: string
+            example: "chat3762"
+            pattern: '^.*?$'
+            minLength: 1
+            maxLength: 999
+        - name: messageId
+          description: Message id
+          in: path
+          required: true
+          schema:
+            description: Message id
+            type: string
+            example: "message5763"
+            pattern: '^.*?$'
+            minLength: 1
+            maxLength: 999
+      responses:
+        '204':
+          description: Message deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
+                    pattern: '^.*?$'
+                    minLength: 1
+                    maxLength: 999
+        '404':
+          description: Message not found
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message not found"
+                    pattern: '^.*?$'
+                    minLength: 1
+                    maxLength: 999   
+
   /chats/{chatId}/messages/{messageId}/reactions:
     post:
       tags: [Messages]
@@ -511,72 +574,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatId}/messages/{messageId}/delete:
-    delete:
-      tags: [Messages]
-      security:
-        - bearerAuth: []
-      summary: Deletes a message
-      description: Deletes the selected message as long as it was sent by the user
-      operationId: deleteMessage
-      parameters:
-        - name: chatId
-          description: Chat id
-          in: path
-          required: true
-          schema:
-            description: Chat id
-            type: string
-            example: "chat3762"
-            pattern: '^.*?$'
-            minLength: 1
-            maxLength: 999
-        - name: messageId
-          description: Message id
-          in: path
-          required: true
-          schema:
-            description: Message id
-            type: string
-            example: "message5763"
-            pattern: '^.*?$'
-            minLength: 1
-            maxLength: 999
-      responses:
-        '204':
-          description: Message deleted
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                description: error
-                type: object
-                properties:
-                  errror:
-                    description: error
-                    type: string
-                    example: "Unauthorized"
-                    pattern: '^.*?$'
-                    minLength: 1
-                    maxLength: 999
-        '404':
-          description: Message not found
-          content:
-            application/json:
-              schema:
-                description: error
-                type: object
-                properties:
-                  errror:
-                    description: error
-                    type: string
-                    example: "Message not found"
-                    pattern: '^.*?$'
-                    minLength: 1
-                    maxLength: 999
-
-  /chats/{chatIdUrl}/settings/add:
+  /chats/{chatIdUrl}/settings/users:
     post:
       tags: [Chat settings]
       security:
@@ -651,7 +649,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatIdUrl}/settings/leave:
+  /chats/{chatIdUrl}/settings:
     delete:
       tags: [Chat settings]
       security:
@@ -705,7 +703,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatIdUrl}/settings/changename:
+  /chats/{chatIdUrl}/settings/name:
     put:
       tags: [Chat settings]
       security:
@@ -796,7 +794,7 @@ paths:
                     minLength: 1
                     maxLength: 999
 
-  /chats/{chatIdUrl}/settings/changephoto:
+  /chats/{chatIdUrl}/settings/photo:
     put:
       tags: [Chat settings]
       security:
@@ -878,7 +876,7 @@ paths:
                     maxLength: 999
                     example: "Group not found"
 
-  /createchat:
+  /chat:
     post:
       tags: ["Chats"]
       security:

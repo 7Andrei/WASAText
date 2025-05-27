@@ -11,21 +11,21 @@ func (rt *_router) Handler() http.Handler {
 
 	rt.router.POST("/session", rt.loginUser) //
 	rt.router.GET("/users/:user_id", rt.getUser)
-	rt.router.PUT("/settings/changename", rt.setUsername) //
-	rt.router.PUT("/settings/changephoto", rt.setPhoto)   //
+	rt.router.PUT("/settings/name", rt.setUsername) //
+	rt.router.PUT("/settings/photo", rt.setPhoto)   //
 	rt.router.GET("/users", rt.getAllUsers)
 
-	rt.router.GET("/chats/:chat_id", rt.getChat)                           //
-	rt.router.GET("/chats", rt.getAllChats)                                //
-	rt.router.POST("/createchat", rt.createChat)                           //
-	rt.router.PUT("/chats/:chat_id/settings/changename", rt.setChatName)   //
-	rt.router.PUT("/chats/:chat_id/settings/changephoto", rt.setChatPhoto) //
-	rt.router.POST("/chats/:chat_id/settings/add", rt.addUserToChat)       //
-	rt.router.DELETE("/chats/:chat_id/settings/leave", rt.leaveChat)       //
+	rt.router.GET("/chats/:chat_id", rt.getChat)                       //
+	rt.router.GET("/chats", rt.getAllChats)                            //
+	rt.router.POST("/chat", rt.createChat)                             //
+	rt.router.PUT("/chats/:chat_id/settings/name", rt.setChatName)     //
+	rt.router.PUT("/chats/:chat_id/settings/photo", rt.setChatPhoto)   //
+	rt.router.POST("/chats/:chat_id/settings/users", rt.addUserToChat) //
+	rt.router.DELETE("/chats/:chat_id/settings", rt.leaveChat)         //
 
 	rt.router.POST("/chats/:chat_id", rt.sendMessage)                                                  //
 	rt.router.POST("/chats/:chat_id/messages/:message_id", rt.forwardMessage)                          //
-	rt.router.DELETE("/chats/:chat_id/messages/:message_id/delete", rt.deleteMessage)                  //
+	rt.router.DELETE("/chats/:chat_id/messages/:message_id", rt.deleteMessage)                         //
 	rt.router.POST("/chats/:chat_id/messages/:message_id/reactions", rt.addReaction)                   //
 	rt.router.DELETE("/chats/:chat_id/messages/:message_id/reactions/:reaction_id", rt.deleteReaction) //
 

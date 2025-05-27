@@ -70,7 +70,7 @@ export default {
         {
             try 
             {
-                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}/delete`, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}`, {headers:{Authorization: this.userId}})
                 this.refreshMessages()
             } 
             catch (error) 
