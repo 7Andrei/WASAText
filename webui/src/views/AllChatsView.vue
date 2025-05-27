@@ -198,7 +198,7 @@ export default {
                 <div class="col-md-12 mb-4" v-for="user in foundUsers" :key="user.userId">
                     <button @click="createOrSend(user.userId)" class="btn btn-primary">{{ user.userName }}</button>
                 </div>
-                <div v-if="!chats" class="col-md-12">
+                <div v-if="chats.length<1" class="col-md-12">
                     <div class="alert alert-danger text-center" role="alert">
                         No chats found
                     </div>
