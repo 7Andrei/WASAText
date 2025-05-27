@@ -64,7 +64,7 @@ export default {
             {
                 let response = await this.$axios.get("/chats", {headers:{Authorization: this.userId }})
                 this.chats = response.data;
-                if (this.chats==nil)
+                if (this.chats==null)
                 {
                     this.chats = []
                 }
@@ -99,7 +99,7 @@ export default {
         {
             let response = await this.$axios.get("/chats", { headers: { Authorization: this.userId } });
             this.chats = response.data;
-            if (this.chats==nil)
+            if (this.chats==null)
             {
                 this.chats = []
             }
@@ -116,7 +116,6 @@ export default {
             }
             );
 
-            // console.log("Sorted Chats:", this.chats);
         } 
         catch (error) 
         {
