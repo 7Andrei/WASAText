@@ -10,6 +10,7 @@ export default {
             users: [],
             reply: 0,
             replyMessage: null,
+            fileInput: null,
         }
     },
     methods: 
@@ -38,11 +39,14 @@ export default {
                 this.refreshMessages()
                 this.message=""
                 this.messagePhoto=null
+                this.$refs.fileInput.value = null
             } 
             catch (error) 
             {
                 console.log("Errore(placeholder)", error)
             }
+            this.messagePhoto = null
+            this.message = ""
             this.replyMessage = null
             this.reply = 0
         },
@@ -128,6 +132,10 @@ export default {
                 messagePhotoForm, 
                 {headers:{Authorization: this.userId}, 
                 contentType: 'multipart/form-data'})
+                this.messagePhoto = null
+                this.message = ""
+                this.replyMessage = null
+                this.reply = 0
                 this.refreshMessages()
             } 
             catch (error) 
@@ -249,7 +257,22 @@ export default {
                                 </div>
                                 <p v-if="message.forwarded"> Forwarded from {{ users.find(user => user.userId == message.forwarded)?.userName || 'Unknown' }} </p>
                                 <img v-if="message.photo" :src="`data:image/jpeg;base64, ${message.photo}`" height="200" width="200" alt="Message Photo" class="mb-2">
-                                <p v-if="message.reply" class="text-muted">Replying to: {{ chat.chatMessages.find(msg => msg.id === message.reply)?.text || 'Message not found' }} </p>
+                                <p v-if="message.reply" class="text-muted">
+                                    Replying to:
+                                    <span class="text-muted" v-if="chat.chatMessages.find(msg => msg.id === message.reply)?.text && chat.chatMessages.find(msg => msg.id === message.reply)?.photo">
+                                        <img :src="`data:image/jpeg;base64, ${chat.chatMessages.find(msg => msg.id === message.reply)?.photo}`" height="32" width="32" alt="Reply Photo" class="me-1">
+                                        {{ chat.chatMessages.find(msg => msg.id === message.reply)?.text }}
+                                    </span>
+                                    <span v-else-if="chat.chatMessages.find(msg => msg.id === message.reply)?.text">
+                                        {{ chat.chatMessages.find(msg => msg.id === message.reply)?.text }}
+                                    </span>
+                                    <span v-else-if="chat.chatMessages.find(msg => msg.id === message.reply)?.photo && !chat.chatMessages.find(msg => msg.id === message.reply)?.text">
+                                        <img :src="`data:image/jpeg;base64, ${chat.chatMessages.find(msg => msg.id === message.reply)?.photo}`" height="32" width="32" alt="Reply Photo" class="me-1">
+                                    </span>
+                                    <span v-else>
+                                        Message not found
+                                    </span>
+                                </p>
                                 <p class="card-text">{{ message.text }}</p>
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
                                 <div class="d-flex flex-column align-items-end mt-2">
@@ -302,7 +325,7 @@ export default {
                             <input type="text" class="form-control" v-model="message" placeholder="Your message">
                         </div>
                         <div class="col-4">
-                            <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload">
+                            <input type="file" class="form-control" id="chatPhoto" @change="handleFileUpload" ref="fileInput">
                         </div>
                         <div class="col-2">
                             <button type="submit" class="btn btn-primary">Send</button>
