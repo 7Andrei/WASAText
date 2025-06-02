@@ -24,14 +24,11 @@ export default {
             let returnId = null
 
             chat.append('chatType', "private")
-            console.log("participants", participants)
             chat.append('chatParticipants', JSON.stringify(participants))
             try 
             {
                 let response = await this.$axios.post('/chat', chat, {headers:{Authorization: this.userId}, contentType: 'multipart/form-data'})
-                console.log(response.data)
                 returnId = response.data
-                // this.$router.push("/chats")
             } 
             catch (error) 
             {
@@ -93,7 +90,6 @@ export default {
     async mounted()
     {
         this.userId = sessionStorage.getItem("userId")
-        console.log(this.userId)
 
         try 
         {
@@ -122,7 +118,6 @@ export default {
             console.log("Errore(DaCambiare)", error);
         }
 
-
         try 
         {
             let response = await this.$axios.get("/users", {headers:{Authorization: this.userId}})
@@ -150,12 +145,13 @@ export default {
     unmounted() {
         clearInterval(this.refreshInterval);
     },
-    watch: {
+    watch: 
+    {
         searchUser: function(){
             if(this.searchUser.length>2)
             {
                 this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
-                console.log(this.foundUsers)
+                // console.log(this.foundUsers)
             }
             else if(this.searchUser == "/")
             {
