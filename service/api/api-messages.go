@@ -69,7 +69,7 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	if checkPhoto || checkContent {
-		message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, int(message.Forwarded), message.Reply)
+		message.Id, err = rt.db.SendMessage(message.Content, message.Photo, message.Sender, message.Receiver, message.Forwarded, message.Reply)
 		if err != nil {
 			http.Error(w, "Error sending message", http.StatusBadRequest)
 			return
