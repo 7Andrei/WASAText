@@ -34,6 +34,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 // AppDatabase is the high level interface for the DB
@@ -49,13 +50,14 @@ type AppDatabase interface {
 	GetAllUsers() ([]User, error)
 	CheckUserName(userName string) (bool, error)
 
-	GetChat(chatId int) (Chat, error)
+	GetChat(chatId int, flagSingle bool, userId int) (Chat, error)
 	CreateChat(chatName string, chatPhoto []byte, chatType string) (int, error)
 	GetAllChats(userId int) ([]Chat, error)
 	AddParticipant(chatId int, participantId int) error
 	SetChatName(chatId int, newName string) error
 	SetChatPhoto(chatId int, newPhoto []byte) error
 	LeaveChat(chatId int, userId int) error
+	MessageSeen(chatId int, userId int) ([]time.Time, error)
 
 	SendMessage(messageContent string, messagePhoto []byte, messageSender int, messageReceiver int, messageForwarded int, messageReply int) (int, error)
 	ForwardMessage(messageId int, messageReceiver int, messageForwarded int) error
@@ -142,6 +144,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		user_chatsStmt := `CREATE TABLE IF NOT EXISTS user_chats (
 						   userId INTEGER NOT NULL, 
 						   chatId INT NOT NULL,
+						   lastAccess TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						   FOREIGN KEY (userId) references users(id), 
 						   FOREIGN KEY(chatId) references chats(id));`
 		_, err = db.Exec(user_chatsStmt)

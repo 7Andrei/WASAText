@@ -51,13 +51,16 @@ export default {
             this.reply = 0
         },
         handleFileUpload(event)
-       {
+        {   
            this.messagePhoto = event.target.files[0]
-       },
+        },
         async refreshMessages()
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
+            for (let message of this.chat.chatMessages) {
+                message.seen = await this.isMessageSeen(this.chatId, message.dateTime, message.id)
+            }   
         },
         getUser(userId)
         {   
@@ -144,7 +147,7 @@ export default {
             }
         },
         forwardMessage(chatId, messageId)
-       {
+        {
             console.log("Forwarding message", messageId)
             this.$router.push(`/chats/${chatId}/messages/${messageId}`)
         },
@@ -158,6 +161,29 @@ export default {
         {
             this.reply = 0
             this.replyMessage = null
+        },
+        async isMessageSeen(chatId, messageDateTime, messageId)
+        {
+            try
+            {
+                let response = await this.$axios.get(`/chats/${chatId}/messages/${messageId}/seen`, {headers:{Authorization: this.userId}})
+                let chatUsers = response.data
+                let messageDate = new Date(messageDateTime)
+                for (let chatUser of chatUsers)
+                {
+                    let chatUserDate = new Date(chatUser)
+                    if (chatUserDate<= messageDate)
+                    {
+                        return false
+                    }
+                }
+                return true
+            } 
+            catch (error) 
+            {
+                console.log("Errore(placeholder)", error)
+                return false
+            }
         }
     },
     async mounted()
@@ -168,7 +194,10 @@ export default {
         {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
-            console.log(this.chat)
+            for (let message of this.chat.chatMessages) {
+                message.seen = await this.isMessageSeen(this.chatId, message.dateTime, message.id)
+            }  
+            // console.log(this.chat)
             // return this.chat
 
 
@@ -277,6 +306,14 @@ export default {
                                 <small class="text-muted float-end">{{ message.dateTime }}</small>
                                 <div class="d-flex flex-column align-items-end mt-2">
                                     <div class="d-flex">
+                                        <span v-if="isSender(message.sender)">
+                                            <svg v-if="message.seen" class="feather text-primary">
+                                                <use href="/feather-sprite-v4.29.0.svg#check-circle"/>
+                                            </svg>
+                                            <svg v-else class="feather text-secondary">
+                                                <use href="/feather-sprite-v4.29.0.svg#check"/>
+                                            </svg>
+                                        </span>
                                         <button v-if="isSender(message.sender)" @click="deleteMessage(message.id)" class="btn btn-link">
                                             <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#trash-2"/></svg>
                                         </button>

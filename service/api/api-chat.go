@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -14,9 +15,20 @@ import (
 func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	var chat Chat
+	var userId int
 
 	if !Authorized(r, rt) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userIdHeader := r.Header.Get("Authorization")
+	if userIdHeader == "" {
+		http.Error(w, "userId header not found", http.StatusBadRequest)
+		return
+	}
+	userId, err := strconv.Atoi(userIdHeader)
+	if err != nil {
+		http.Error(w, "Error converting userId header to int", http.StatusBadRequest)
 		return
 	}
 
@@ -28,7 +40,7 @@ func (rt *_router) getChat(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	chat.Id = chat_Id
 
-	tmpChat, err := rt.db.GetChat(chat.Id)
+	tmpChat, err := rt.db.GetChat(chat.Id, true, userId)
 	if errors.Is(err, sql.ErrNoRows) {
 		http.Error(w, "Chat not found", http.StatusNotFound)
 		return
@@ -321,4 +333,43 @@ func (rt *_router) leaveChat(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (rt *_router) messageSeen(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var chatId int
+	var userId int
+	var lastAccesses []time.Time
+
+	if !Authorized(r, rt) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var tempId = ps.ByName("chat_id")
+	chatId, err := strconv.Atoi(tempId)
+	if err != nil {
+		http.Error(w, "Error converting chat id", http.StatusBadRequest)
+		return
+	}
+
+	authentication := r.Header.Get("Authorization")
+	userId, err = strconv.Atoi(authentication)
+	if err != nil {
+		http.Error(w, "Error converting userId header to int", http.StatusBadRequest)
+		return
+	}
+
+	lastAccesses, err = rt.db.MessageSeen(chatId, userId)
+	if err != nil {
+		http.Error(w, "Error fetching last accesses", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	lastAccessesJSON, err := json.Marshal(lastAccesses)
+	if err != nil {
+		http.Error(w, "Error marshalling last accesses", http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(lastAccessesJSON)
 }

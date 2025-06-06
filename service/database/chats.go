@@ -3,9 +3,10 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"time"
 )
 
-func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
+func (db *appdbimpl) GetChat(chatId int, flagSingle bool, userId int) (Chat, error) {
 	var chat Chat
 	err := db.c.QueryRow("SELECT id, name, photo, type FROM chats WHERE id=?", chatId).Scan(&chat.Id, &chat.Name, &chat.Photo, &chat.ChatType)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -73,6 +74,13 @@ func (db *appdbimpl) GetChat(chatId int) (Chat, error) {
 
 	}
 
+	if flagSingle {
+		_, err = db.c.Exec("UPDATE user_chats SET lastAccess = CURRENT_TIMESTAMP WHERE chatId = ? AND userId = ?", chatId, userId)
+		if err != nil {
+			return chat, err
+		}
+	}
+
 	return chat, nil
 }
 
@@ -102,7 +110,7 @@ func (db *appdbimpl) GetAllChats(userId int) ([]Chat, error) {
 		if err != nil {
 			return chats, err
 		}
-		chat, err = db.GetChat(id)
+		chat, err = db.GetChat(id, false, 0)
 		if err != nil {
 			return chats, err
 		}
@@ -144,4 +152,25 @@ func (db *appdbimpl) LeaveChat(chatId int, userId int) error {
 		return err
 	}
 	return nil
+}
+
+func (db *appdbimpl) MessageSeen(chatId int, userId int) ([]time.Time, error) {
+	var lastAccesses []time.Time
+	rows, err := db.c.Query("SELECT lastAccess FROM user_chats WHERE chatId=? AND userId != ?", chatId, userId)
+	if err != nil {
+		return lastAccesses, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var lastAccess time.Time
+		err := rows.Scan(&lastAccess)
+		if err != nil {
+			return lastAccesses, err
+		}
+		lastAccesses = append(lastAccesses, lastAccess)
+	}
+	if rows.Err() != nil {
+		return lastAccesses, err
+	}
+	return lastAccesses, nil
 }

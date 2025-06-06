@@ -15,13 +15,14 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/settings/photo", rt.setPhoto)   //
 	rt.router.GET("/users", rt.getAllUsers)
 
-	rt.router.GET("/chats/:chat_id", rt.getChat)                       //
-	rt.router.GET("/chats", rt.getAllChats)                            //
-	rt.router.POST("/chat", rt.createChat)                             //
-	rt.router.PUT("/chats/:chat_id/settings/name", rt.setChatName)     //
-	rt.router.PUT("/chats/:chat_id/settings/photo", rt.setChatPhoto)   //
-	rt.router.POST("/chats/:chat_id/settings/users", rt.addUserToChat) //
-	rt.router.DELETE("/chats/:chat_id/settings", rt.leaveChat)         //
+	rt.router.GET("/chats/:chat_id", rt.getChat)                               //
+	rt.router.GET("/chats", rt.getAllChats)                                    //
+	rt.router.POST("/chat", rt.createChat)                                     //
+	rt.router.PUT("/chats/:chat_id/settings/name", rt.setChatName)             //
+	rt.router.PUT("/chats/:chat_id/settings/photo", rt.setChatPhoto)           //
+	rt.router.POST("/chats/:chat_id/settings/users", rt.addUserToChat)         //
+	rt.router.DELETE("/chats/:chat_id/settings", rt.leaveChat)                 //
+	rt.router.GET("/chats/:chat_id/messages/:message_id/seen", rt.messageSeen) //
 
 	rt.router.POST("/chats/:chat_id", rt.sendMessage)                                                  //
 	rt.router.POST("/chats/:chat_id/messages/:message_id", rt.forwardMessage)                          //

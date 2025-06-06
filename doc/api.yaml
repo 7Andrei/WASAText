@@ -399,6 +399,72 @@ paths:
                     minLength: 1
                     maxLength: 999   
 
+  /chats/{chatId}/messages/{messageId}/seen:
+    post:
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      summary: Marks a message as seen
+      description: Marks the selected message as seen by the user
+      operationId: messageSeen
+      parameters:
+        - name: chatId
+          description: Chat id
+          in: path
+          required: true
+          schema:
+            description: Chat id
+            type: string
+            example: "chat3762"
+            pattern: '^.*?$'
+            minLength: 1
+            maxLength: 999
+        - name: messageId
+          description: Message id
+          in: path
+          required: true
+          schema:
+            description: Message id
+            type: string
+            example: "message5763"
+            pattern: '^.*?$'
+            minLength: 1
+            maxLength: 999
+      responses:
+        '204':
+          description: "Message marked as seen"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Unauthorized"
+                    pattern: '^.*?$'
+                    minLength: 1
+                    maxLength: 999
+        '404':
+          description: "Message not found"
+          content:
+            application/json:
+              schema:
+                description: error
+                type: object
+                properties:
+                  errror:
+                    description: error
+                    type: string
+                    example: "Message not found"
+                    pattern: '^.*?$'
+                    minLength: 1
+                    maxLength: 999
+
+
   /chats/{chatId}/messages/{messageId}/reactions:
     post:
       tags: [Messages]
