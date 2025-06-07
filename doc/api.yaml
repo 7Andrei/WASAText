@@ -400,7 +400,7 @@ paths:
                     maxLength: 999   
 
   /chats/{chatId}/messages/{messageId}/seen:
-    post:
+    get:
       tags: [Messages]
       security:
         - bearerAuth: []
