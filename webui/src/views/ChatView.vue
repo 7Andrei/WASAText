@@ -59,7 +59,7 @@ export default {
             let response = await this.$axios.get(`/chats/${this.chatId}`, {headers:{Authorization: this.userId}})
             this.chat=response.data
             for (let message of this.chat.chatMessages) {
-                message.seen = await this.isMessageSeen(this.chatId, message.dateTime, message.id)
+                message.seen = await this.messageSeen(this.chatId, message.dateTime, message.id)
             }   
         },
         getUser(userId)
@@ -162,7 +162,7 @@ export default {
             this.reply = 0
             this.replyMessage = null
         },
-        async isMessageSeen(chatId, messageDateTime, messageId)
+        async messageSeen(chatId, messageDateTime, messageId)
         {
             try
             {
