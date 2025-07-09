@@ -104,7 +104,8 @@ export default {
                     }
                 }
 
-                let response = await this.$axios.post(`/chats/${this.chatId}/messages/${messageId}/reactions`, {reaction: reaction}, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.post(`/chats/${this.chatId}/messages/${messageId}/reactions`, 
+                                                     {reaction: reaction}, {headers:{Authorization: this.userId}})
                 console.log("Added reaction")
                 this.refreshMessages()
             } 
@@ -117,7 +118,8 @@ export default {
         {
             try 
             {
-                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}/reactions/${reactionId}`, {headers:{Authorization: this.userId}})
+                let response = await this.$axios.delete(`/chats/${this.chatId}/messages/${messageId}/reactions/${reactionId}`, 
+                                                       {headers:{Authorization: this.userId}})
                 this.refreshMessages()
             } 
             catch (error) 
@@ -235,7 +237,8 @@ export default {
         <div class="row border-bottom border-primary mt-4">
             <div class="col-8">
                 <h3 v-if="chat.chatType == 'private'">
-                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  v-if ="chat.chatType=='private' && chat.chatParticipants.find(user => user.userId != userId)?.userPhoto">
+                    <img :src="`data:image/jpeg;base64,${chat.chatParticipants.find(user => user.userId != userId)?.userPhoto}`" height="64" width="64"  
+                                v-if ="chat.chatType=='private' && chat.chatParticipants.find(user => user.userId != userId)?.userPhoto">
                     <img src="https://placehold.co/64x64?text=Placeholder" height="64" width="64" alt="Placeholder" v-else>
                     {{ chat.chatParticipants.find(participant => participant.userId != userId)?.userName || 'Private Chat' }}
                 </h3>
@@ -254,7 +257,6 @@ export default {
                 </span>
             </div>
         </div>
-        <!-- DAFARE: Doppie spunte -->
         <div class="mt-4">
             <div class="row justify-content-start">
                 <div class="col-md-10">

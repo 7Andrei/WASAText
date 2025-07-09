@@ -71,6 +71,9 @@ func (db *appdbimpl) GetAllUsers() ([]User, error) {
 func (db *appdbimpl) CheckUserName(userName string) (bool, error) {
 	var userId = 0
 	err := db.c.QueryRow("SELECT id FROM users WHERE name=?", userName).Scan(&userId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}

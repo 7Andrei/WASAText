@@ -151,7 +151,6 @@ export default {
             if(this.searchUser.length>2)
             {
                 this.foundUsers = this.users.filter(user => user.userName.toLowerCase().includes(this.searchUser.toLowerCase()))
-                // console.log(this.foundUsers)
             }
             else if(this.searchUser == "/")
             {
